@@ -6,9 +6,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RepositoryImpl @Inject
+class RepositorySt @Inject
 constructor(private val service: RemoteData) {
     suspend fun getStory() = service.getUser(API_KEY)
-
-
 }

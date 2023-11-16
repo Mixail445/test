@@ -21,7 +21,6 @@ class Push : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPushBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.titlePush.text = "${intent.getStringExtra("SER")}"
         checkIntent()
     }
     private fun checkIntent() {
