@@ -7,7 +7,7 @@ import android.content.Intent
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.test908.R
-import com.example.test908.ui.push.Push
+import com.example.test908.presentation.ui.push.PushActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -18,10 +18,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
-        val intent = Intent(this, Push::class.java)
+        val intent = Intent(this, PushActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.putExtra("SER", message.notification?.title)
-        message.data["title"]?.let { Log.d("ONE", it) }
         val pendingIntent = PendingIntent.getActivity(
             this,
             0,

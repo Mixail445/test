@@ -1,17 +1,16 @@
 package com.example.test908.network
 
 
-import com.example.test908.data.modelone.ResultOne
+import com.example.test908.data.model.Result
 import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ServiceRetrofit {
     //Get all reviews
-
     @GET("arts.json?")
-    suspend fun getreview(
+    suspend fun getReview(
         @Query("api-key") api_key: String,
-    ): ResultOne
+    ): Result
 
 
 }

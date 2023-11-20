@@ -32,7 +32,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRemote(ser: ServiceRetrofit): RemoteData = RemoteData(ser)
+    fun provideRemote(service: ServiceRetrofit): RemoteData =
+        RemoteData(service)
 
     @Singleton
     @Provides

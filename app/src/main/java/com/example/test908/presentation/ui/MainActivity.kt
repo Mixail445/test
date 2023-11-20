@@ -1,7 +1,9 @@
-package com.example.test908.ui
+package com.example.test908.presentation.ui
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.example.test908.R
@@ -11,6 +13,18 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        Log.d("efe", "OnNewIntent-Starting")
+        val extras = intent?.extras
+        if (extras != null) {
+            for (key in extras.keySet()) {
+                val value = extras[key]
+                Log.d("er", "Extras received at onNewIntent:  Key: $key Value: $value")
+            }
+        }
+    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,5 +52,15 @@ class MainActivity : AppCompatActivity() {
             binding.toolbar.critics.setBackgroundResource(R.drawable.rounded_right)
             windows.statusBarColor = this.resources.getColor(R.color.orr, resources.newTheme())
         }
+        val extras = intent?.extras
+        if (extras != null) {
+            for (key in extras.keySet()) {
+                val value = extras[key]
+                Log.d("er", "Extras received at onNewIntent:  Key: $key Value: $value")
+            }
+            val title = extras.getString("click_action")
+            Log.d("title", title.toString())
+        }
     }
 }
+

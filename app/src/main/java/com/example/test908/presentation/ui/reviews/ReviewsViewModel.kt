@@ -1,24 +1,26 @@
-package com.example.test908.ui.reviews
+package com.example.test908.presentation.ui.reviews
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.liveData
-import com.example.test908.data.repository.RepositorySt
+import com.example.test908.data.repository.RemoteData
+import com.example.test908.utils.Constant.API_KEY
 import com.example.test908.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
+import javax.inject.Inject
 
 @HiltViewModel
-class FragViewModel @Inject constructor(private val repository: RepositorySt) : ViewModel() {
+class ReviewsViewModel @Inject constructor(private val repository: RemoteData) :
+    ViewModel() {
 
     init {
-        getUsers()
+        getStory()
     }
 
-    fun getUsers() = liveData(Dispatchers.IO) {
+    fun getStory() = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = repository.getStory()))
+            emit(Resource.success(data = repository.getStory(API_KEY)))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred!"))
         }

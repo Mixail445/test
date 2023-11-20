@@ -1,4 +1,4 @@
-package com.example.test908.data.modelone
+package com.example.test908.data.model
 
 data class Multimedia(
     val caption: String,

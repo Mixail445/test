@@ -1,4 +1,4 @@
-package com.example.test908.ui.critics
+package com.example.test908.presentation.ui.critics
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.test908.databinding.PushCriticBinding
 
-class FragCritic : Fragment() {
+class CriticFragment : Fragment() {
     private var _binding: PushCriticBinding? = null
     private val binding get() = _binding!!
     override fun onCreateView(
@@ -16,7 +16,6 @@ class FragCritic : Fragment() {
         savedInstanceState: Bundle?,
     ): View {
         _binding = PushCriticBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 }

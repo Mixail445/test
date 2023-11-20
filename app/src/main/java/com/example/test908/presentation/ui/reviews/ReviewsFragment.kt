@@ -1,6 +1,7 @@
-package com.example.test908.ui.reviews
+package com.example.test908.presentation.ui.reviews
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,21 +11,24 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.test908.R
+import com.example.test908.data.model.Story
 import com.example.test908.databinding.ReviewesBinding
-import com.example.test908.ui.adapters.ReviewsAdapter
+import com.example.test908.presentation.adapters.ReviewsAdapter
 import com.example.test908.utils.RecyclerViewItemDecoration
 import com.example.test908.utils.Status
 import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 @AndroidEntryPoint
-class FragReviews : Fragment() {
+class ReviewsFragment : Fragment() {
     private var _binding: ReviewesBinding? = null
     private val binding get() = _binding!!
     lateinit var reviewsAdapter: ReviewsAdapter
-    private val viewModel: FragViewModel by viewModels()
+    private val viewModel: ReviewsViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -78,14 +82,19 @@ class FragReviews : Fragment() {
         binding.rcview.layoutManager = LinearLayoutManager(context)
         binding.rcview.setHasFixedSize(true)
         binding.rcview.addItemDecoration(RecyclerViewItemDecoration())
+        reviewsAdapter.setOnClickListener(object : ReviewsAdapter.OnClickListener {
+            override fun onClick(position: Int, model: Story) {
+                Toast.makeText(activity, model.byline, Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
     private fun loadData() {
-        viewModel.getUsers().observe(viewLifecycleOwner) {
+        viewModel.getStory().observe(viewLifecycleOwner) {
             it.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        val list = listOf<com.example.test908.data.modelone.Result>()
+                        val list = listOf<Story>()
                         reviewsAdapter.submitList(list)
                         resource.data?.let { users -> reviewsAdapter.setData(users.results) }
                         binding.swipeContainer.visibility = View.VISIBLE

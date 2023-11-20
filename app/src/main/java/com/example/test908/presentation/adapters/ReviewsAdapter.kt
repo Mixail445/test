@@ -1,4 +1,4 @@
-package com.example.test908.ui.adapters
+package com.example.test908.presentation.adapters
 
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +12,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.test908.R
-import com.example.test908.data.modelone.Result
+import com.example.test908.data.model.Story
 
-class ReviewsAdapter : ListAdapter<Result, ReviewsAdapter.Holder>(ReviewsComparator), Filterable {
+class ReviewsAdapter : ListAdapter<Story, ReviewsAdapter.Holder>(ReviewsComparator), Filterable {
     private var list = kotlin.collections.ArrayList(currentList)
+    private var onClickListener: OnClickListener? = null
 
     class Holder(view: View) : RecyclerView.ViewHolder(view) {
         val title: TextView = itemView.findViewById(R.id.title_item)
@@ -23,6 +24,7 @@ class ReviewsAdapter : ListAdapter<Result, ReviewsAdapter.Holder>(ReviewsCompara
         val data: TextView = itemView.findViewById(R.id.data_item)
         val name: TextView = itemView.findViewById(R.id.name_item)
         val photo: ImageView = itemView.findViewById(R.id.photo_item)
+
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
@@ -36,6 +38,11 @@ class ReviewsAdapter : ListAdapter<Result, ReviewsAdapter.Holder>(ReviewsCompara
         holder.body.text = itemsViewModel.abstract
         holder.data.text = itemsViewModel.byline
         holder.name.text = itemsViewModel.published_date
+        holder.itemView.setOnClickListener {
+            if (onClickListener != null) {
+                onClickListener!!.onClick(position, itemsViewModel)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -45,12 +52,12 @@ class ReviewsAdapter : ListAdapter<Result, ReviewsAdapter.Holder>(ReviewsCompara
         return Holder(itemView)
     }
 
-    object ReviewsComparator : DiffUtil.ItemCallback<Result>() {
-        override fun areItemsTheSame(oldItem: Result, newItem: Result): Boolean {
+    object ReviewsComparator : DiffUtil.ItemCallback<Story>() {
+        override fun areItemsTheSame(oldItem: Story, newItem: Story): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: Result, newItem: Result): Boolean {
+        override fun areContentsTheSame(oldItem: Story, newItem: Story): Boolean {
             return oldItem.byline == newItem.byline
         }
     }
@@ -58,7 +65,7 @@ class ReviewsAdapter : ListAdapter<Result, ReviewsAdapter.Holder>(ReviewsCompara
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(p0: CharSequence?): FilterResults {
-                val list1 = mutableListOf<Result>()
+                val list1 = mutableListOf<Story>()
                 val filterSeq = p0.toString().lowercase()
                 if (filterSeq.isNotEmpty()) {
                     list.forEach {
@@ -79,13 +86,22 @@ class ReviewsAdapter : ListAdapter<Result, ReviewsAdapter.Holder>(ReviewsCompara
             }
 
             override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
-                submitList(p1?.values as? List<Result>)
+                submitList(p1?.values as? List<Story>)
             }
         }
     }
 
-    fun setData(list: List<Result>) {
-        this.list = (list as ArrayList<Result>?)!!
+    interface OnClickListener {
+        fun onClick(position: Int, model: Story)
+    }
+
+    fun setOnClickListener(onClickListener: OnClickListener) {
+        this.onClickListener = onClickListener
+    }
+
+    fun setData(list: List<Story>) {
+        this.list = (list as ArrayList<Story>?)!!
         submitList(list)
     }
 }
+

@@ -1,6 +1,6 @@
-package com.example.test908.data.modelone
+package com.example.test908.data.model
 
-data class Result(
+data class Story(
     val `abstract`: String,
     val byline: String,
     val created_date: String,
