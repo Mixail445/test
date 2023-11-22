@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.test908.data.model.Story
+import com.example.test908.data.dao.StoryDto
 import com.example.test908.databinding.ActivityPushBinding
 import com.example.test908.presentation.ui.reviews.ReviewsViewModel
 import com.example.test908.utils.Status
@@ -55,7 +55,7 @@ class PushActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkList(list: ArrayList<Story>, name: String) {
+    private fun checkList(list: ArrayList<StoryDto>, name: String) {
         list.forEachIndexed { index, result ->
             if (result.byline == name) {
                 ind = index.toString()

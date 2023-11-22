@@ -11,8 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.test908.R
 import com.example.test908.databinding.ReviewesBinding
-import com.example.test908.domain.entity.StoryEntity
 import com.example.test908.presentation.adapters.ReviewsAdapter
+import com.example.test908.presentation.reviewList.StoryUi
 import com.example.test908.utils.RecyclerViewItemDecoration
 import com.example.test908.utils.Status
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -82,7 +82,7 @@ class ReviewsFragment : Fragment() {
         binding.rcview.setHasFixedSize(true)
         binding.rcview.addItemDecoration(RecyclerViewItemDecoration())
         reviewsAdapter.setOnClickListener(object : ReviewsAdapter.OnClickListener {
-            override fun onClick(position: Int, model: StoryEntity) {
+            override fun onClick(position: Int, model: StoryUi) {
                 Toast.makeText(activity, model.byline, Toast.LENGTH_LONG).show()
             }
         })

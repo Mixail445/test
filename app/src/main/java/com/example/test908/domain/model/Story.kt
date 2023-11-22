@@ -1,8 +1,9 @@
-package com.example.test908.domain.entity
+package com.example.test908.domain.model
+
+import com.example.test908.presentation.reviewList.StoryUi
 
 
-
-data class StoryEntity(
+data class Story(
     val abstract: String,
     val byline: String,
     val createdDate: String,
@@ -11,7 +12,7 @@ data class StoryEntity(
     val itemType: String,
     val kicker: String,
     val materialTypeFacet: String,
-    val multimedia: List<MultimediaEntity>,
+    val multimedia: List<Multimedia>,
     val orgFacet: List<String>,
     val perFacet: List<String>,
     val publishedDate: String,
@@ -23,3 +24,12 @@ data class StoryEntity(
     val uri: String,
     val url: String,
 )
+fun Story.mapFromEntity(): StoryUi =
+    StoryUi(
+        abstract = abstract,
+        byline = byline,
+        multimedia = multimedia.map { it.mapFromEntity() },
+        publishedDate = publishedDate,
+        title = title,
+    )
+

@@ -1,8 +1,8 @@
-package com.example.test908.data.model
+package com.example.test908.data.dao
 
-import com.example.test908.domain.entity.MultimediaEntity
+import com.example.test908.domain.model.Multimedia
 
-data class Multimedia(
+data class MultimediaDto(
     val caption: String,
     val copyright: String,
     val format: String,
@@ -13,8 +13,8 @@ data class Multimedia(
     val width: Int,
 )
 
-fun Multimedia.mapIt(): MultimediaEntity =
-    MultimediaEntity(
+fun MultimediaDto.mapToEntity(): Multimedia =
+    Multimedia(
         caption,
         copyright,
         format,
