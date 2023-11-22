@@ -34,11 +34,11 @@ class PushActivity : AppCompatActivity() {
                     Status.SUCCESS -> {
                         binding.linearLoad.visibility = View.GONE
                         binding.linearData.visibility = View.VISIBLE
-                        val arrayList =
-                            resource.data?.results?.let { it1 -> ArrayList<Story>(it1) }
-                        arrayList?.let { it1 -> checkList(it1, name) }
-                        binding.titlePush.text = resource?.data?.results?.get(ind.toInt())?.byline
-                        binding.bodyPush.text = resource?.data?.results?.get(ind.toInt())?.abstract
+                        //  val arrayList =
+                        //      resource.data?.results?.let { it1 -> ArrayList<Story>(it1)  }
+                        //     arrayList?.let { it1 -> checkList(it1, name) }
+                        //    binding.titlePush.text = resource?.data?.results?.get(ind.toInt())?.byline
+                        //     binding.bodyPush.text = resource?.data?.results?.get(ind.toInt())?.abstract
                     }
                     Status.LOADING -> {
                         binding.linearLoad.visibility = View.VISIBLE

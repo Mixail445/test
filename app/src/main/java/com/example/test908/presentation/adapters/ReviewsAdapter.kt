@@ -12,9 +12,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.test908.R
-import com.example.test908.data.model.Story
+import com.example.test908.domain.entity.StoryEntity
 
-class ReviewsAdapter : ListAdapter<Story, ReviewsAdapter.Holder>(ReviewsComparator), Filterable {
+class ReviewsAdapter : ListAdapter<StoryEntity, ReviewsAdapter.Holder>(ReviewsComparator),
+    Filterable {
     private var list = kotlin.collections.ArrayList(currentList)
     private var onClickListener: OnClickListener? = null
 
@@ -37,7 +38,7 @@ class ReviewsAdapter : ListAdapter<Story, ReviewsAdapter.Holder>(ReviewsComparat
         holder.title.text = itemsViewModel.title
         holder.body.text = itemsViewModel.abstract
         holder.data.text = itemsViewModel.byline
-        holder.name.text = itemsViewModel.published_date
+        holder.name.text = itemsViewModel.publishedDate
         holder.itemView.setOnClickListener {
             if (onClickListener != null) {
                 onClickListener!!.onClick(position, itemsViewModel)
@@ -52,12 +53,12 @@ class ReviewsAdapter : ListAdapter<Story, ReviewsAdapter.Holder>(ReviewsComparat
         return Holder(itemView)
     }
 
-    object ReviewsComparator : DiffUtil.ItemCallback<Story>() {
-        override fun areItemsTheSame(oldItem: Story, newItem: Story): Boolean {
+    object ReviewsComparator : DiffUtil.ItemCallback<StoryEntity>() {
+        override fun areItemsTheSame(oldItem: StoryEntity, newItem: StoryEntity): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: Story, newItem: Story): Boolean {
+        override fun areContentsTheSame(oldItem: StoryEntity, newItem: StoryEntity): Boolean {
             return oldItem.byline == newItem.byline
         }
     }
@@ -65,14 +66,14 @@ class ReviewsAdapter : ListAdapter<Story, ReviewsAdapter.Holder>(ReviewsComparat
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(p0: CharSequence?): FilterResults {
-                val list1 = mutableListOf<Story>()
+                val list1 = mutableListOf<StoryEntity>()
                 val filterSeq = p0.toString().lowercase()
                 if (filterSeq.isNotEmpty()) {
                     list.forEach {
                         if (it.title.lowercase().contains(filterSeq) ||
                             it.abstract.lowercase().contains(filterSeq) ||
                             it.byline.lowercase().contains(filterSeq) ||
-                            it.published_date.lowercase().contains(filterSeq)
+                            it.publishedDate.lowercase().contains(filterSeq)
                         ) {
                             list1.add(it)
                         }
@@ -86,21 +87,21 @@ class ReviewsAdapter : ListAdapter<Story, ReviewsAdapter.Holder>(ReviewsComparat
             }
 
             override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
-                submitList(p1?.values as? List<Story>)
+                submitList(p1?.values as? List<StoryEntity>)
             }
         }
     }
 
     interface OnClickListener {
-        fun onClick(position: Int, model: Story)
+        fun onClick(position: Int, model: StoryEntity)
     }
 
     fun setOnClickListener(onClickListener: OnClickListener) {
         this.onClickListener = onClickListener
     }
 
-    fun setData(list: List<Story>) {
-        this.list = (list as ArrayList<Story>?)!!
+    fun setData(list: List<StoryEntity>) {
+        this.list = (list as ArrayList<StoryEntity>)
         submitList(list)
     }
 }

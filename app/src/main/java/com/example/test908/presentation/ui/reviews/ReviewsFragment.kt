@@ -1,7 +1,6 @@
 package com.example.test908.presentation.ui.reviews
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.test908.R
-import com.example.test908.data.model.Story
 import com.example.test908.databinding.ReviewesBinding
+import com.example.test908.domain.entity.StoryEntity
 import com.example.test908.presentation.adapters.ReviewsAdapter
 import com.example.test908.utils.RecyclerViewItemDecoration
 import com.example.test908.utils.Status
@@ -83,7 +82,7 @@ class ReviewsFragment : Fragment() {
         binding.rcview.setHasFixedSize(true)
         binding.rcview.addItemDecoration(RecyclerViewItemDecoration())
         reviewsAdapter.setOnClickListener(object : ReviewsAdapter.OnClickListener {
-            override fun onClick(position: Int, model: Story) {
+            override fun onClick(position: Int, model: StoryEntity) {
                 Toast.makeText(activity, model.byline, Toast.LENGTH_LONG).show()
             }
         })
@@ -94,10 +93,10 @@ class ReviewsFragment : Fragment() {
             it.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        val list = listOf<Story>()
-                        reviewsAdapter.submitList(list)
+
                         resource.data?.let { users -> reviewsAdapter.setData(users.results) }
                         binding.swipeContainer.visibility = View.VISIBLE
+
                     }
                     Status.LOADING -> {
                         binding.progressBar.visibility = View.VISIBLE

@@ -1,7 +1,9 @@
 package com.example.test908.network
 
 import com.example.test908.BuildConfig
-import com.example.test908.data.repository.RemoteData
+import com.example.test908.data.remote.ReviewsServiceRetrofit
+import com.example.test908.data.repository.ReviewReviewRepositoryImpl
+import com.example.test908.domain.repository.ReviewRepository
 import com.example.test908.utils.Constant
 import dagger.Module
 import dagger.Provides
@@ -18,13 +20,13 @@ import javax.inject.Singleton
 object AppModule {
     @Singleton
     @Provides
-    fun provideRetrofit(okHttpClient: OkHttpClient): ServiceRetrofit =
+    fun provideRetrofit(okHttpClient: OkHttpClient): ReviewsServiceRetrofit =
         Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(provideBaseUrl())
             .client(okHttpClient)
             .build()
-            .create(ServiceRetrofit::class.java)
+            .create(ReviewsServiceRetrofit::class.java)
 
     @Provides
     @Singleton
@@ -32,8 +34,8 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRemote(service: ServiceRetrofit): RemoteData =
-        RemoteData(service)
+    fun provideRemote(service: ReviewsServiceRetrofit): ReviewRepository =
+        ReviewReviewRepositoryImpl(service)
 
     @Singleton
     @Provides
