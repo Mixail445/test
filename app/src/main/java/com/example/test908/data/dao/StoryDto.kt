@@ -1,9 +1,9 @@
-package com.example.test908.data.model
+package com.example.test908.data.dao
 
-import com.example.test908.domain.entity.StoryEntity
+import com.example.test908.domain.model.Story
 import com.google.gson.annotations.SerializedName
 
-data class Story(
+data class StoryDto(
     @SerializedName("abstract")
     val abstract: String,
     @SerializedName("byline")
@@ -21,7 +21,7 @@ data class Story(
     @SerializedName("material_type_facet")
     val materialTypeFacet: String,
     @SerializedName("multimedia")
-    val multimedia: List<Multimedia>,
+    val multimedia: List<MultimediaDto>,
     @SerializedName("org_facet")
     val orgFacet: List<String>,
     @SerializedName("per_facet")
@@ -42,8 +42,8 @@ data class Story(
     val url: String,
 )
 
-fun Story.mapIt(): StoryEntity =
-    StoryEntity(
+fun StoryDto.mapToEntity(): Story =
+    Story(
         abstract = abstract,
         byline = byline,
         createdDate = createdDate,
@@ -52,7 +52,7 @@ fun Story.mapIt(): StoryEntity =
         itemType = itemType,
         kicker = kicker,
         materialTypeFacet = materialTypeFacet,
-        multimedia = multimedia.map { it.mapIt() },
+        multimedia = multimedia.map { it.mapToEntity() },
         orgFacet = orgFacet,
         perFacet = perFacet,
         publishedDate = publishedDate,

@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.test908.R
-import com.example.test908.domain.entity.StoryEntity
+import com.example.test908.presentation.reviewList.StoryUi
 
-class ReviewsAdapter : ListAdapter<StoryEntity, ReviewsAdapter.Holder>(ReviewsComparator),
+class ReviewsAdapter : ListAdapter<StoryUi, ReviewsAdapter.Holder>(ReviewsComparator),
     Filterable {
     private var list = kotlin.collections.ArrayList(currentList)
     private var onClickListener: OnClickListener? = null
@@ -53,12 +53,12 @@ class ReviewsAdapter : ListAdapter<StoryEntity, ReviewsAdapter.Holder>(ReviewsCo
         return Holder(itemView)
     }
 
-    object ReviewsComparator : DiffUtil.ItemCallback<StoryEntity>() {
-        override fun areItemsTheSame(oldItem: StoryEntity, newItem: StoryEntity): Boolean {
+    object ReviewsComparator : DiffUtil.ItemCallback<StoryUi>() {
+        override fun areItemsTheSame(oldItem: StoryUi, newItem: StoryUi): Boolean {
             return oldItem == newItem
         }
 
-        override fun areContentsTheSame(oldItem: StoryEntity, newItem: StoryEntity): Boolean {
+        override fun areContentsTheSame(oldItem: StoryUi, newItem: StoryUi): Boolean {
             return oldItem.byline == newItem.byline
         }
     }
@@ -66,7 +66,7 @@ class ReviewsAdapter : ListAdapter<StoryEntity, ReviewsAdapter.Holder>(ReviewsCo
     override fun getFilter(): Filter {
         return object : Filter() {
             override fun performFiltering(p0: CharSequence?): FilterResults {
-                val list1 = mutableListOf<StoryEntity>()
+                val list1 = mutableListOf<StoryUi>()
                 val filterSeq = p0.toString().lowercase()
                 if (filterSeq.isNotEmpty()) {
                     list.forEach {
@@ -87,21 +87,21 @@ class ReviewsAdapter : ListAdapter<StoryEntity, ReviewsAdapter.Holder>(ReviewsCo
             }
 
             override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
-                submitList(p1?.values as? List<StoryEntity>)
+                submitList(p1?.values as List<StoryUi> )
             }
         }
     }
 
     interface OnClickListener {
-        fun onClick(position: Int, model: StoryEntity)
+        fun onClick(position: Int, model: StoryUi)
     }
 
     fun setOnClickListener(onClickListener: OnClickListener) {
         this.onClickListener = onClickListener
     }
 
-    fun setData(list: List<StoryEntity>) {
-        this.list = (list as ArrayList<StoryEntity>)
+    fun setData(list: List<StoryUi>) {
+        this.list = (list as ArrayList<StoryUi>)
         submitList(list)
     }
 }
