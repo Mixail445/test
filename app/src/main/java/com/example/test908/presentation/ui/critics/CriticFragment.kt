@@ -13,7 +13,7 @@ class CriticFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = PushCriticBinding.inflate(inflater, container, false)
         return binding.root

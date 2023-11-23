@@ -11,7 +11,6 @@ import com.example.test908.presentation.ui.reviews.ReviewsViewModel
 import com.example.test908.utils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class PushActivity : AppCompatActivity() {
     private lateinit var ind: String

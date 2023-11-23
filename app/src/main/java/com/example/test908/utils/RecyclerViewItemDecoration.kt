@@ -11,16 +11,13 @@ class RecyclerViewItemDecoration :
         outRect: Rect,
         view: View,
         parent: RecyclerView,
-        state: RecyclerView.State,
+        state: RecyclerView.State
     ) {
         super.getItemOffsets(outRect, view, parent, state)
         val itemPosition = parent.getChildAdapterPosition(view)
         val totalCount = parent.adapter!!.itemCount
         if (itemPosition >= 0 && itemPosition <= totalCount - 1) {
             outRect.bottom = decorationHeightWidth
-
         }
     }
-
-
 }

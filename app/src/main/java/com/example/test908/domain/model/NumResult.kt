@@ -8,7 +8,7 @@ data class NumResult(
     val numResults: Int,
     val results: List<Story>,
     val section: String,
-    val status: String,
+    val status: String
 )
 fun NumResult.mapFromEntity(): NumResultUi =
     NumResultUi(

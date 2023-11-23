@@ -14,7 +14,8 @@ import com.bumptech.glide.Glide
 import com.example.test908.R
 import com.example.test908.presentation.reviewList.StoryUi
 
-class ReviewsAdapter : ListAdapter<StoryUi, ReviewsAdapter.Holder>(ReviewsComparator),
+class ReviewsAdapter :
+    ListAdapter<StoryUi, ReviewsAdapter.Holder>(ReviewsComparator),
     Filterable {
     private var list = kotlin.collections.ArrayList(currentList)
     private var onClickListener: OnClickListener? = null
@@ -25,7 +26,6 @@ class ReviewsAdapter : ListAdapter<StoryUi, ReviewsAdapter.Holder>(ReviewsCompar
         val data: TextView = itemView.findViewById(R.id.data_item)
         val name: TextView = itemView.findViewById(R.id.name_item)
         val photo: ImageView = itemView.findViewById(R.id.photo_item)
-
     }
 
     override fun onBindViewHolder(holder: Holder, position: Int) {
@@ -87,7 +87,7 @@ class ReviewsAdapter : ListAdapter<StoryUi, ReviewsAdapter.Holder>(ReviewsCompar
             }
 
             override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
-                submitList(p1?.values as List<StoryUi> )
+                submitList(p1?.values as? List<StoryUi>)
             }
         }
     }
@@ -105,4 +105,3 @@ class ReviewsAdapter : ListAdapter<StoryUi, ReviewsAdapter.Holder>(ReviewsCompar
         submitList(list)
     }
 }
-

@@ -6,4 +6,13 @@
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Next</string>
     <string name="previous">Previous</string>
+    <string name="Error">Error</string>
+    <string name="alex">Alex</string>
+    <string name="alex_body">Alex body</string>
+    <string name="sofa">Sofa</string>
+    <string name="and_webster">And Webster</string>
+    <string name="textview_textview_textview_textview_textview_textview">TextView TextView TextView TextView TextView TextView</string>
+    <string name="date_date_date_date_date">Date Date Date Date Date</string>
+    <string name="tap_to_retry">Tap to Retry</string>
+    <string name="loading_data_please_wait">Loading data, please wait</string>
 </resources>
