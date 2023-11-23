@@ -12,7 +12,7 @@ data class Multimedia(
     val url: String,
     val width: Int
 )
-fun Multimedia.mapFromEntity(): MultimediaUi =
+fun Multimedia.mapToUi(): MultimediaUi =
     MultimediaUi(
         url = url
     )
