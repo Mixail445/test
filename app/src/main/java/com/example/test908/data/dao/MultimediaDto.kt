@@ -10,7 +10,7 @@ data class MultimediaDto(
     val subtype: String,
     val type: String,
     val url: String,
-    val width: Int,
+    val width: Int
 )
 
 fun MultimediaDto.mapToEntity(): Multimedia =

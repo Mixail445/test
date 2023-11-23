@@ -11,7 +11,7 @@ data class NumResultDto(
     val numResults: Int,
     val results: List<StoryDto>,
     val section: String,
-    val status: String,
+    val status: String
 )
 
 fun NumResultDto.mapToEntity(): NumResult =

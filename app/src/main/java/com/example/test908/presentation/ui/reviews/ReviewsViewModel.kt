@@ -7,8 +7,8 @@ import com.example.test908.domain.repository.ReviewRemoteSource
 import com.example.test908.utils.Constant.API_KEY
 import com.example.test908.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 
 @HiltViewModel
 class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteSource) :

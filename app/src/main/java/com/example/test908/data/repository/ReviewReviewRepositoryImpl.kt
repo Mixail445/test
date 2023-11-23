@@ -12,6 +12,4 @@ class ReviewReviewRepositoryImpl @Inject constructor(
     override suspend fun getStory(api: String): NumResult {
         return service.getReview(api).mapToEntity()
     }
-
-
 }

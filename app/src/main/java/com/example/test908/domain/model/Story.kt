@@ -2,7 +2,6 @@ package com.example.test908.domain.model
 
 import com.example.test908.presentation.reviewList.StoryUi
 
-
 data class Story(
     val abstract: String,
     val byline: String,
@@ -22,7 +21,7 @@ data class Story(
     val title: String,
     val updatedDate: String,
     val uri: String,
-    val url: String,
+    val url: String
 )
 fun Story.mapFromEntity(): StoryUi =
     StoryUi(
@@ -30,6 +29,5 @@ fun Story.mapFromEntity(): StoryUi =
         byline = byline,
         multimedia = multimedia.map { it.mapFromEntity() },
         publishedDate = publishedDate,
-        title = title,
+        title = title
     )
-

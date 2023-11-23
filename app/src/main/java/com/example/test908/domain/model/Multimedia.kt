@@ -10,7 +10,7 @@ data class Multimedia(
     val subtype: String,
     val type: String,
     val url: String,
-    val width: Int,
+    val width: Int
 )
 fun Multimedia.mapFromEntity(): MultimediaUi =
     MultimediaUi(

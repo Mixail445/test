@@ -39,7 +39,7 @@ data class StoryDto(
     @SerializedName("updated_date")
     val updatedDate: String,
     val uri: String,
-    val url: String,
+    val url: String
 )
 
 fun StoryDto.mapToEntity(): Story =
@@ -62,5 +62,5 @@ fun StoryDto.mapToEntity(): Story =
         title = title,
         updatedDate = updatedDate,
         url = url,
-        uri = uri,
+        uri = uri
     )

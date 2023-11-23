@@ -31,7 +31,7 @@ class ReviewsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?,
+        savedInstanceState: Bundle?
     ): View {
         _binding = ReviewesBinding.inflate(inflater, container, false)
         val view = binding.root
@@ -44,7 +44,7 @@ class ReviewsFragment : Fragment() {
     }
 
     private fun searchDataReviewers() {
-        val dataClick = binding.dataclick
+        val dataClick = binding.dataClick
         val dataText = binding.dataTExt
         dataClick.setOnClickListener {
             val picker = MaterialDatePicker.Builder.datePicker()
@@ -77,10 +77,10 @@ class ReviewsFragment : Fragment() {
 
     private fun setupRcView() {
         reviewsAdapter = ReviewsAdapter()
-        binding.rcview.adapter = reviewsAdapter
-        binding.rcview.layoutManager = LinearLayoutManager(context)
-        binding.rcview.setHasFixedSize(true)
-        binding.rcview.addItemDecoration(RecyclerViewItemDecoration())
+        binding.rcView.adapter = reviewsAdapter
+        binding.rcView.layoutManager = LinearLayoutManager(context)
+        binding.rcView.setHasFixedSize(true)
+        binding.rcView.addItemDecoration(RecyclerViewItemDecoration())
         reviewsAdapter.setOnClickListener(object : ReviewsAdapter.OnClickListener {
             override fun onClick(position: Int, model: StoryUi) {
                 Toast.makeText(activity, model.byline, Toast.LENGTH_LONG).show()
@@ -93,17 +93,15 @@ class ReviewsFragment : Fragment() {
             it.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-
                         resource.data?.let { users -> reviewsAdapter.setData(users.results) }
                         binding.swipeContainer.visibility = View.VISIBLE
-
                     }
                     Status.LOADING -> {
                         binding.progressBar.visibility = View.VISIBLE
                         binding.swipeContainer.visibility = View.GONE
                     }
                     Status.ERROR -> {
-                        binding.rcview.visibility = View.VISIBLE
+                        binding.rcView.visibility = View.VISIBLE
                         binding.progressBar.visibility = View.GONE
                         Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
                     }
