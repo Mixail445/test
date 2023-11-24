@@ -35,12 +35,11 @@ class ReviewsFragment : Fragment() {
     ): View {
         _binding = ReviewesBinding.inflate(inflater, container, false)
         val view = binding.root
-        loadData("create")
+        loadDataWithSearch()
         setupRcView()
         refresh()
         searchReviewers()
         searchDataReviewers()
-
         return view
     }
 
@@ -56,7 +55,7 @@ class ReviewsFragment : Fragment() {
             picker.show(this.childFragmentManager, "Tag")
             picker.addOnPositiveButtonClickListener {
                 dataText.text = convertData(it)
-                loadData(convertData(it))
+                loadDataWithSearch(convertData(it))
             }
         }
     }
@@ -70,7 +69,7 @@ class ReviewsFragment : Fragment() {
 
     private fun refresh() {
         binding.swipeContainer.setOnRefreshListener {
-            loadData("refresh")
+            loadDataWithSearch()
             binding.dataTExt.text = ""
             binding.swipeContainer.isRefreshing = false
         }
@@ -89,8 +88,29 @@ class ReviewsFragment : Fragment() {
         })
     }
 
-    private fun loadData(query: String) {
+    private fun loadDataWithSearch(query: String) {
         viewModel.getStorySearch(query).observe(viewLifecycleOwner) {
+            it.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        reviewsAdapter.submitList(it.data)
+                        binding.swipeContainer.visibility = View.VISIBLE
+                    }
+                    Status.LOADING -> {
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.swipeContainer.visibility = View.GONE
+                    }
+                    Status.ERROR -> {
+                        binding.rcView.visibility = View.VISIBLE
+                        binding.progressBar.visibility = View.GONE
+                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+    }
+    private fun loadDataWithSearch() {
+        viewModel.getStory().observe(viewLifecycleOwner) {
             it.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -116,7 +136,7 @@ class ReviewsFragment : Fragment() {
                 return false
             }
             override fun onQueryTextChange(newText: String): Boolean {
-                loadData(newText)
+                loadDataWithSearch(newText)
                 return true
             }
         })
