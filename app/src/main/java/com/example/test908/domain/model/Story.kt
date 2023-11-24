@@ -23,11 +23,11 @@ data class Story(
     val uri: String,
     val url: String
 )
-fun Story.mapFromEntity(): StoryUi =
+fun Story.mapToUi(): StoryUi =
     StoryUi(
         abstract = abstract,
         byline = byline,
-        multimedia = multimedia.map { it.mapFromEntity() },
+        multimedia = multimedia.map { it.mapToUi() },
         publishedDate = publishedDate,
         title = title
     )
