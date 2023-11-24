@@ -1,4 +1,4 @@
-package com.example.test908.data.dao
+package com.example.test908.data.dto
 
 import com.example.test908.domain.model.Multimedia
 
@@ -13,7 +13,7 @@ data class MultimediaDto(
     val width: Int
 )
 
-fun MultimediaDto.mapToEntity(): Multimedia =
+fun MultimediaDto.mapToDomain(): Multimedia =
     Multimedia(
         caption,
         copyright,

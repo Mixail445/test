@@ -3,8 +3,6 @@ package com.example.test908.presentation.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
@@ -15,8 +13,7 @@ import com.example.test908.R
 import com.example.test908.presentation.reviewList.StoryUi
 
 class ReviewsAdapter :
-    ListAdapter<StoryUi, ReviewsAdapter.Holder>(ReviewsComparator),
-    Filterable {
+    ListAdapter<StoryUi, ReviewsAdapter.Holder>(ReviewsComparator) {
     private var list = kotlin.collections.ArrayList(currentList)
     private var onClickListener: OnClickListener? = null
 
@@ -63,35 +60,6 @@ class ReviewsAdapter :
         }
     }
 
-    override fun getFilter(): Filter {
-        return object : Filter() {
-            override fun performFiltering(p0: CharSequence?): FilterResults {
-                val list1 = mutableListOf<StoryUi>()
-                val filterSeq = p0.toString().lowercase()
-                if (filterSeq.isNotEmpty()) {
-                    list.forEach {
-                        if (it.title.lowercase().contains(filterSeq) ||
-                            it.abstract.lowercase().contains(filterSeq) ||
-                            it.byline.lowercase().contains(filterSeq) ||
-                            it.publishedDate.lowercase().contains(filterSeq)
-                        ) {
-                            list1.add(it)
-                        }
-                    }
-                } else {
-                    list1.addAll(list)
-                }
-                val result = FilterResults()
-                result.values = list1
-                return result
-            }
-
-            override fun publishResults(p0: CharSequence?, p1: FilterResults?) {
-                submitList(p1?.values as? List<StoryUi>)
-            }
-        }
-    }
-
     interface OnClickListener {
         fun onClick(position: Int, model: StoryUi)
     }
@@ -100,8 +68,4 @@ class ReviewsAdapter :
         this.onClickListener = onClickListener
     }
 
-    fun setData(list: List<StoryUi>) {
-        this.list = (list as ArrayList<StoryUi>)
-        submitList(list)
-    }
 }

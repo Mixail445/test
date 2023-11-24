@@ -26,7 +26,7 @@ import java.util.TimeZone
 class ReviewsFragment : Fragment() {
     private var _binding: ReviewesBinding? = null
     private val binding get() = _binding!!
-    lateinit var reviewsAdapter: ReviewsAdapter
+    private lateinit var reviewsAdapter: ReviewsAdapter
     private val viewModel: ReviewsViewModel by viewModels()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,11 +35,12 @@ class ReviewsFragment : Fragment() {
     ): View {
         _binding = ReviewesBinding.inflate(inflater, container, false)
         val view = binding.root
+        loadData("create")
         setupRcView()
-        loadData()
         refresh()
         searchReviewers()
         searchDataReviewers()
+
         return view
     }
 
@@ -55,7 +56,7 @@ class ReviewsFragment : Fragment() {
             picker.show(this.childFragmentManager, "Tag")
             picker.addOnPositiveButtonClickListener {
                 dataText.text = convertData(it)
-                reviewsAdapter.filter.filter(convertData(it))
+                loadData(convertData(it))
             }
         }
     }
@@ -69,7 +70,7 @@ class ReviewsFragment : Fragment() {
 
     private fun refresh() {
         binding.swipeContainer.setOnRefreshListener {
-            loadData()
+            loadData("refresh")
             binding.dataTExt.text = ""
             binding.swipeContainer.isRefreshing = false
         }
@@ -88,12 +89,12 @@ class ReviewsFragment : Fragment() {
         })
     }
 
-    private fun loadData() {
-        viewModel.getStory().observe(viewLifecycleOwner) {
+    private fun loadData(query: String) {
+        viewModel.getStorySearch(query).observe(viewLifecycleOwner) {
             it.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        resource.data?.let { users -> reviewsAdapter.setData(users.results) }
+                        reviewsAdapter.submitList(it.data)
                         binding.swipeContainer.visibility = View.VISIBLE
                     }
                     Status.LOADING -> {
@@ -109,16 +110,14 @@ class ReviewsFragment : Fragment() {
             }
         }
     }
-
     private fun searchReviewers() {
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
-
             override fun onQueryTextChange(newText: String): Boolean {
-                reviewsAdapter.filter.filter(newText)
-                return false
+                loadData(newText)
+                return true
             }
         })
     }
