@@ -1,4 +1,4 @@
-package com.example.test908.data.dao
+package com.example.test908.data.dto
 
 import com.example.test908.domain.model.NumResult
 import com.google.gson.annotations.SerializedName
@@ -14,12 +14,12 @@ data class NumResultDto(
     val status: String,
 )
 
-fun NumResultDto.mapToEntity(): NumResult =
+fun NumResultDto.mapToDomain(): NumResult =
     NumResult(
         copyright = copyright,
         lastUpdated = lastUpdated,
         numResults = numResults,
-        results = results.map { it.mapToEntity() },
+        results = results.map { it.mapToDomain() },
         section = section,
         status = status
     )

@@ -1,4 +1,4 @@
-package com.example.test908.data.dao
+package com.example.test908.data.dto
 
 import com.example.test908.domain.model.Story
 import com.google.gson.annotations.SerializedName
@@ -42,7 +42,7 @@ data class StoryDto(
     val url: String,
 )
 
-fun StoryDto.mapToEntity(): Story =
+fun StoryDto.mapToDomain(): Story =
     Story(
         abstract = abstract,
         byline = byline,
@@ -52,7 +52,7 @@ fun StoryDto.mapToEntity(): Story =
         itemType = itemType,
         kicker = kicker,
         materialTypeFacet = materialTypeFacet,
-        multimedia = multimedia.map { it.mapToEntity() },
+        multimedia = multimedia.map { it.mapToDomain() },
         orgFacet = orgFacet,
         perFacet = perFacet,
         publishedDate = publishedDate,

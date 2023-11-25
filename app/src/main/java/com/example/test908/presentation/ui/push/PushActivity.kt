@@ -5,7 +5,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.test908.data.dao.StoryDto
+import com.example.test908.data.dto.StoryDto
 import com.example.test908.databinding.ActivityPushBinding
 import com.example.test908.presentation.ui.reviews.ReviewsViewModel
 import com.example.test908.utils.Status

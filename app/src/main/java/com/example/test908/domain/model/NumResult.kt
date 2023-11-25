@@ -10,12 +10,12 @@ data class NumResult(
     val section: String,
     val status: String,
 )
-fun NumResult.mapFromEntity(): NumResultUi =
+fun NumResult.mapToUi(): NumResultUi =
     NumResultUi(
         copyright = copyright,
         lastUpdated = lastUpdated,
         numResults = numResults,
-        results = results.map { it.mapFromEntity() },
+        results = results.map { it.mapToUi() },
         section = section,
         status = status
     )
