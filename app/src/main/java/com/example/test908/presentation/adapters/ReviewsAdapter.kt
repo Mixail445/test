@@ -14,7 +14,6 @@ import com.example.test908.presentation.reviewList.StoryUi
 
 class ReviewsAdapter :
     ListAdapter<StoryUi, ReviewsAdapter.Holder>(ReviewsComparator) {
-    private var list = kotlin.collections.ArrayList(currentList)
     private var onClickListener: OnClickListener? = null
 
     class Holder(view: View) : RecyclerView.ViewHolder(view) {
@@ -67,5 +66,4 @@ class ReviewsAdapter :
     fun setOnClickListener(onClickListener: OnClickListener) {
         this.onClickListener = onClickListener
     }
-
 }
