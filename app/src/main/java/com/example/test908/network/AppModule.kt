@@ -1,8 +1,7 @@
 package com.example.test908.network
 
-import com.example.test908.BuildConfig
 import com.example.test908.data.remote.ReviewsServiceRetrofit
-import com.example.test908.data.repository.ReviewReviewRepositoryImpl
+import com.example.test908.data.repository.ReviewRepositoryImpl
 import com.example.test908.domain.repository.ReviewRepository
 import com.example.test908.utils.Constant
 import dagger.Module
@@ -35,19 +34,18 @@ object AppModule {
     @Singleton
     @Provides
     fun provideRemote(service: ReviewsServiceRetrofit): ReviewRepository =
-        ReviewReviewRepositoryImpl(service)
+        ReviewRepositoryImpl(service)
+
+    private val interceptor = run {
+        val httpLoggingInterceptor = HttpLoggingInterceptor()
+        httpLoggingInterceptor.apply {
+            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+        }
+    }
 
     @Singleton
     @Provides
-    fun provideOkHttpClient() = if (BuildConfig.DEBUG) {
-        val loggingInterceptor = HttpLoggingInterceptor()
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-        OkHttpClient.Builder()
-            .addInterceptor(loggingInterceptor)
+    fun provideOkHttpClient() =
+        OkHttpClient.Builder().addInterceptor(RequestInterceptor()).addInterceptor(interceptor)
             .build()
-    } else {
-        OkHttpClient
-            .Builder()
-            .build()
-    }
 }

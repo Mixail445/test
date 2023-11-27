@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.test908.domain.model.mapToUi
 import com.example.test908.domain.repository.ReviewRemoteSource
 import com.example.test908.presentation.reviewList.StoryUi
-import com.example.test908.utils.Constant.API_KEY
 import com.example.test908.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Locale
@@ -18,6 +17,7 @@ import kotlinx.coroutines.launch
 class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteSource) :
     ViewModel() {
     private val localOriginalList = ArrayList<StoryUi>()
+
     fun getStorySearch(query: String, point: String = "") = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
@@ -29,9 +29,9 @@ class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteS
     private suspend fun search(query: String, point: String = ""): List<StoryUi> {
         val filteredList = ArrayList<StoryUi>()
         if (localOriginalList.isEmpty()) {
-            localOriginalList.addAll(repository.getStory(API_KEY).mapToUi().results)
+            localOriginalList.addAll(repository.getStory().mapToUi().results)
         } else if (point == "1") { filteredList.addAll(
-            repository.getStory(API_KEY).mapToUi().results
+            repository.getStory().mapToUi().results
         ) }
         viewModelScope.launch {
             for (item in localOriginalList) {
