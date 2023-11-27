@@ -69,7 +69,7 @@ class ReviewsFragment : Fragment() {
 
     private fun refresh() {
         binding.swipeContainer.setOnRefreshListener {
-            loadDataWithSearch()
+            loadDataWithSearch(point = "1")
             binding.dataTExt.text = ""
             binding.swipeContainer.isRefreshing = false
         }
@@ -88,29 +88,8 @@ class ReviewsFragment : Fragment() {
         })
     }
 
-    private fun loadDataWithSearch(query: String) {
-        viewModel.getStorySearch(query).observe(viewLifecycleOwner) {
-            it.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        reviewsAdapter.submitList(it.data)
-                        binding.swipeContainer.visibility = View.VISIBLE
-                    }
-                    Status.LOADING -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.swipeContainer.visibility = View.GONE
-                    }
-                    Status.ERROR -> {
-                        binding.rcView.visibility = View.VISIBLE
-                        binding.progressBar.visibility = View.GONE
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        }
-    }
-    private fun loadDataWithSearch() {
-        viewModel.getStory().observe(viewLifecycleOwner) {
+    private fun loadDataWithSearch(query: String = "", point: String = "") {
+        viewModel.getStorySearch(query, point = point).observe(viewLifecycleOwner) {
             it.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {

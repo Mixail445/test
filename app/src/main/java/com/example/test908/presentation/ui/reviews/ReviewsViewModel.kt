@@ -9,44 +9,30 @@ import com.example.test908.presentation.reviewList.StoryUi
 import com.example.test908.utils.Constant.API_KEY
 import com.example.test908.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteSource) :
     ViewModel() {
-
-    init {
-        viewModelScope.launch {
-            getList()
-        }
-    }
-    private suspend fun getList() {
-        val originalList = repository.getStory(API_KEY).mapToUi().results
-        localOriginalList.addAll(originalList)
-    }
-    fun getStorySearch(query: String) = liveData(Dispatchers.IO) {
-        emit(Resource.loading(data = null))
-        try {
-            emit(Resource.success(data = search(query = query)))
-        } catch (exception: Exception) {
-            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred"))
-        }
-    }
     private val localOriginalList = ArrayList<StoryUi>()
-    fun getStory() = liveData(Dispatchers.IO) {
+    fun getStorySearch(query: String, point: String = "") = liveData(Dispatchers.IO) {
         emit(Resource.loading(data = null))
         try {
-            emit(Resource.success(data = getStoryFun()))
+            emit(Resource.success(data = search(query, point = point)))
         } catch (exception: Exception) {
             emit(Resource.error(data = null, message = exception.message ?: "Error Occurred"))
         }
     }
-
-    private fun search(query: String): List<StoryUi> {
+    private suspend fun search(query: String, point: String = ""): List<StoryUi> {
         val filteredList = ArrayList<StoryUi>()
+        if (localOriginalList.isEmpty()) {
+            localOriginalList.addAll(repository.getStory(API_KEY).mapToUi().results)
+        } else if (point == "1") { filteredList.addAll(
+            repository.getStory(API_KEY).mapToUi().results
+        ) }
         viewModelScope.launch {
             for (item in localOriginalList) {
                 if (item.byline.lowercase(Locale.ROOT).contains(
@@ -62,13 +48,6 @@ class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteS
                 }
             }
         }
-        return filteredList
-    }
-    private suspend fun getStoryFun(): List<StoryUi> {
-        val filteredList = ArrayList<StoryUi>()
-        filteredList.addAll(
-            repository.getStory(API_KEY).mapToUi().results
-        )
         return filteredList
     }
 }
