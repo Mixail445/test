@@ -5,5 +5,5 @@ import javax.inject.Singleton
 
 @Singleton
 interface ReviewRepository {
-    suspend fun getStory(api: String): NumResult
+    suspend fun getStory(): NumResult
 }
