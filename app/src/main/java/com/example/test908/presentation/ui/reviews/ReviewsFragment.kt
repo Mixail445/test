@@ -6,21 +6,23 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.test908.R
 import com.example.test908.databinding.ReviewesBinding
 import com.example.test908.presentation.adapters.ReviewsAdapter
 import com.example.test908.presentation.reviewList.StoryUi
 import com.example.test908.utils.RecyclerViewItemDecoration
-import com.example.test908.utils.Status
 import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import java.util.TimeZone
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class ReviewsFragment : Fragment() {
@@ -34,9 +36,10 @@ class ReviewsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = ReviewesBinding.inflate(inflater, container, false)
+
         val view = binding.root
-        loadDataWithSearch()
         setupRcView()
+        loadData()
         refresh()
         searchReviewers()
         searchDataReviewers()
@@ -55,7 +58,6 @@ class ReviewsFragment : Fragment() {
             picker.show(this.childFragmentManager, "Tag")
             picker.addOnPositiveButtonClickListener {
                 dataText.text = convertData(it)
-                loadDataWithSearch(convertData(it))
             }
         }
     }
@@ -69,7 +71,16 @@ class ReviewsFragment : Fragment() {
 
     private fun refresh() {
         binding.swipeContainer.setOnRefreshListener {
-            loadDataWithSearch(point = "1")
+            binding.progressBar.isVisible = true
+            binding.swipeContainer.isVisible = false
+            lifecycleScope.launch {
+                viewModel.refreshStory()
+                viewModel.uiState.collect {
+                    reviewsAdapter.submitList(it.reviewRefresh)
+                    binding.swipeContainer.isVisible = it.group
+                    binding.progressBar.isVisible = it.loading
+                }
+            }
             binding.dataTExt.text = ""
             binding.swipeContainer.isRefreshing = false
         }
@@ -87,38 +98,30 @@ class ReviewsFragment : Fragment() {
             }
         })
     }
-
-    private fun loadDataWithSearch(query: String = "", point: String = "") {
-        viewModel.getStorySearch(query, point = point).observe(viewLifecycleOwner) {
-            it.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        reviewsAdapter.submitList(it.data)
-                        binding.swipeContainer.visibility = View.VISIBLE
-                    }
-                    Status.LOADING -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.swipeContainer.visibility = View.GONE
-                    }
-                    Status.ERROR -> {
-                        binding.rcView.visibility = View.VISIBLE
-                        binding.progressBar.visibility = View.GONE
-                        Toast.makeText(requireContext(), it.message, Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        }
-    }
     private fun searchReviewers() {
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return false
             }
             override fun onQueryTextChange(newText: String): Boolean {
-                loadDataWithSearch(newText)
+                lifecycleScope.launch {
+                    viewModel.search(newText)
+                    viewModel.uiState.collect {
+                        reviewsAdapter.submitList(it.reviewFilter)
+                    }
+                }
                 return true
             }
         })
+    }
+    private fun loadData() {
+        lifecycleScope.launch {
+            viewModel.uiState.collect {
+                reviewsAdapter.submitList(it.reviewItems)
+                binding.progressBar.isVisible = it.loading
+                binding.swipeContainer.isVisible = it.group
+            }
+        }
     }
 
     override fun onDestroy() {

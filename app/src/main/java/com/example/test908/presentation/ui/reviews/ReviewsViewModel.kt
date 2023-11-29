@@ -1,39 +1,62 @@
 package com.example.test908.presentation.ui.reviews
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.liveData
 import androidx.lifecycle.viewModelScope
 import com.example.test908.domain.model.mapToUi
 import com.example.test908.domain.repository.ReviewRemoteSource
+import com.example.test908.presentation.ReviewUiState
 import com.example.test908.presentation.reviewList.StoryUi
-import com.example.test908.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Locale
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteSource) :
     ViewModel() {
+
+    private val _uiState = MutableStateFlow(ReviewUiState())
+    val uiState: StateFlow<ReviewUiState> = _uiState.asStateFlow()
     private val localOriginalList = ArrayList<StoryUi>()
 
-    fun getStorySearch(query: String, point: String = "") = liveData(Dispatchers.IO) {
-        emit(Resource.loading(data = null))
-        try {
-            emit(Resource.success(data = search(query, point = point)))
-        } catch (exception: Exception) {
-            emit(Resource.error(data = null, message = exception.message ?: "Error Occurred"))
+    private suspend fun getList() {
+        val reviewItems = repository.getStory().mapToUi().results
+        localOriginalList.addAll(reviewItems)
+    }
+
+    init {
+        viewModelScope.launch {
+            getList()
+            getStory()
         }
     }
-    private suspend fun search(query: String, point: String = ""): List<StoryUi> {
-        val filteredList = ArrayList<StoryUi>()
-        if (localOriginalList.isEmpty()) {
-            localOriginalList.addAll(repository.getStory().mapToUi().results)
-        } else if (point == "1") { filteredList.addAll(
-            repository.getStory().mapToUi().results
-        ) }
+
+    private fun getStory() {
         viewModelScope.launch {
+            _uiState.update {
+                it.copy(reviewItems = localOriginalList, loading = false, group = true)
+            }
+        }
+    }
+    fun refreshStory() {
+        viewModelScope.launch {
+            _uiState.update {
+                it.copy(
+                    reviewRefresh = repository.getStory().mapToUi().results,
+                    loading = false,
+                    group = true
+                )
+            }
+        }
+    }
+
+    fun search(query: String) {
+        viewModelScope.launch {
+            val filteredList = ArrayList<StoryUi>()
             for (item in localOriginalList) {
                 if (item.byline.lowercase(Locale.ROOT).contains(
                         query.lowercase(Locale.ROOT)
@@ -47,7 +70,9 @@ class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteS
                     filteredList.add(item)
                 }
             }
+            _uiState.update {
+                it.copy(reviewFilter = filteredList)
+            }
         }
-        return filteredList
     }
 }
