@@ -22,7 +22,6 @@ class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteS
     private val _uiState = MutableStateFlow(ReviewUiState())
     val uiState: StateFlow<ReviewUiState> = _uiState.asStateFlow()
     private val localOriginalList = ArrayList<StoryUi>()
-
     private suspend fun getList() {
         val reviewItems = repository.getStory().mapToUi().results
         localOriginalList.addAll(reviewItems)
@@ -38,7 +37,10 @@ class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteS
     private fun getStory() {
         viewModelScope.launch {
             _uiState.update {
-                it.copy(reviewItems = localOriginalList, loading = false, group = true)
+                it.copy(
+                    reviewItems = localOriginalList,
+                    isLoading = false
+                )
             }
         }
     }
@@ -46,15 +48,16 @@ class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteS
         viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    reviewRefresh = repository.getStory().mapToUi().results,
-                    loading = false,
-                    group = true
+                    reviewItems = repository.getStory().mapToUi().results,
+                    isLoading = false,
+                    search = "",
+                    date = ""
                 )
             }
         }
     }
 
-    fun search(query: String) {
+    fun searchByText(query: String) {
         viewModelScope.launch {
             val filteredList = ArrayList<StoryUi>()
             for (item in localOriginalList) {
@@ -62,17 +65,38 @@ class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteS
                         query.lowercase(Locale.ROOT)
                     ) || item.abstract.lowercase(Locale.ROOT).contains(
                         query.lowercase(Locale.ROOT)
-                    ) || item.publishedDate.lowercase(Locale.ROOT).contains(
-                        query.lowercase(Locale.ROOT)
-
                     )
                 ) {
                     filteredList.add(item)
                 }
             }
             _uiState.update {
-                it.copy(reviewFilter = filteredList)
+                it.copy(
+                    reviewItems = filteredList,
+                    search = query,
+                    date = "",
+                    isLoading = false
+                )
             }
+        }
+    }
+    fun searchByDate(query: String) {
+        val filteredList = ArrayList<StoryUi>()
+        for (item in localOriginalList) {
+            if (item.publishedDate.lowercase(Locale.ROOT).contains(
+                    query.lowercase(Locale.ROOT)
+                )
+            ) {
+                filteredList.add(item)
+            }
+        }
+        _uiState.update {
+            it.copy(
+                reviewItems = filteredList,
+                date = query,
+                search = "",
+                isLoading = false
+            )
         }
     }
 }
