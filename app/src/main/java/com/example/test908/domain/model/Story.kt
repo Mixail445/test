@@ -1,6 +1,6 @@
 package com.example.test908.domain.model
 
-import com.example.test908.presentation.reviewList.StoryUi
+import com.example.test908.presentation.reviewList.ReviewUi
 
 data class Story(
     val abstract: String,
@@ -23,8 +23,8 @@ data class Story(
     val uri: String,
     val url: String
 )
-fun Story.mapToUi(): StoryUi =
-    StoryUi(
+fun Story.mapToUi(): ReviewUi =
+    ReviewUi(
         abstract = abstract,
         byline = byline,
         multimedia = multimedia.map { it.mapToUi() },
