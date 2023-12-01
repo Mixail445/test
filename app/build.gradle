@@ -33,6 +33,7 @@ android {
     }
 }
 dependencies {
+    implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.0'
 
     //Firebase
     implementation 'com.google.firebase:firebase-messaging:23.3.1'
