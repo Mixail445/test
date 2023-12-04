@@ -1,9 +1,9 @@
 package com.example.test908.data.dto
 
-import com.example.test908.domain.model.Story
+import com.example.test908.domain.model.Review
 import com.google.gson.annotations.SerializedName
 
-data class StoryDto(
+data class ReviewDto(
     @SerializedName("abstract")
     val abstract: String,
     @SerializedName("byline")
@@ -42,8 +42,8 @@ data class StoryDto(
     val url: String
 )
 
-fun StoryDto.mapToDomain(): Story =
-    Story(
+fun ReviewDto.mapToDomain(): Review =
+    Review(
         abstract = abstract,
         byline = byline,
         createdDate = createdDate,

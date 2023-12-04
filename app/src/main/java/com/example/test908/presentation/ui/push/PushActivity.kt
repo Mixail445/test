@@ -3,7 +3,7 @@ package com.example.test908.presentation.ui.push
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.example.test908.data.dto.StoryDto
+import com.example.test908.data.dto.ReviewDto
 import com.example.test908.databinding.ActivityPushBinding
 import com.example.test908.presentation.ui.reviews.ReviewsViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,7 +51,7 @@ class PushActivity : AppCompatActivity() {
 //        }
 //    }
 
-    private fun checkList(list: ArrayList<StoryDto>, name: String) {
+    private fun checkList(list: ArrayList<ReviewDto>, name: String) {
         list.forEachIndexed { index, result ->
             if (result.byline == name) {
                 ind = index.toString()

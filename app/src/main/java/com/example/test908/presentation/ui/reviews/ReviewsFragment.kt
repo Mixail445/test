@@ -75,6 +75,7 @@ class ReviewsFragment : Fragment() {
         binding.tvDate.text = model.date
         binding.svQuery.setQuery(model.search, false)
         adapter.submitList(model.reviewItems)
+        binding.ErrorText.text = model.isErrorMessage
     }
     private fun searchReviewersByQuery() {
         binding.svQuery.setOnQueryTextListener(object : SearchView.OnQueryTextListener {

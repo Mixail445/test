@@ -2,7 +2,7 @@ package com.example.test908.domain.model
 
 import com.example.test908.presentation.reviewList.ReviewUi
 
-data class Story(
+data class Review(
     val abstract: String,
     val byline: String,
     val createdDate: String,
@@ -23,7 +23,7 @@ data class Story(
     val uri: String,
     val url: String
 )
-fun Story.mapToUi(): ReviewUi =
+fun Review.mapToUi(): ReviewUi =
     ReviewUi(
         abstract = abstract,
         byline = byline,

@@ -6,7 +6,7 @@ data class NumResult(
     val copyright: String,
     val lastUpdated: String,
     val numResults: Int,
-    val results: List<Story>,
+    val results: List<Review>,
     val section: String,
     val status: String
 )

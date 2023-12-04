@@ -11,6 +11,7 @@ import com.example.test908.presentation.reviewList.ReviewUi
 import com.example.test908.presentation.ui.reviews.ReviewsView.Event
 import com.example.test908.presentation.ui.reviews.ReviewsView.Model
 import com.example.test908.presentation.ui.reviews.ReviewsView.UiLabel
+import com.example.test908.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.Locale
 import javax.inject.Inject
@@ -30,23 +31,29 @@ class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteS
     val uiLabels: LiveData<UiLabel> get() = _uiLabels
 
     private var _reviews: NumResult? = null
+    private var _errorMessage: String? = ""
 
     init {
         viewModelScope.launch {
             initData()
         }
     }
-
     private suspend fun initData() {
-        val response = repository.getStory()
-        _reviews = response
-        _uiState.update { model ->
-            model.copy(
-                isLoading = false,
-                reviewItems = response.results.map { it.mapToUi() }
-            )
+        repository.getStory().collect { resource ->
+            when (resource) {
+                is Resource.Error -> _errorMessage = resource.message
+                is Resource.Success -> { _reviews = resource.data }
+            }
+            _uiState.update { model ->
+                model.copy(
+                    reviewItems = resource.data?.results?.map { it.mapToUi() } ?: emptyList(),
+                    isErrorMessage = _errorMessage,
+                    isLoading = false
+                )
+            }
         }
     }
+
     fun onEvent(event: Event): Unit = when (event) {
         Event.OnCalendarClick -> handleOnCalendarClick()
         is Event.OnQueryReviewsTextUpdated -> filterByQueryReviews(event.values)
@@ -58,7 +65,6 @@ class ReviewsViewModel @Inject constructor(private val repository: ReviewRemoteS
     private fun handleOnCalendarClick() {
         _uiLabels.value = UiLabel.ShowCalendar
     }
-
     private fun refreshReviews() {
         viewModelScope.launch {
             _uiState.update {

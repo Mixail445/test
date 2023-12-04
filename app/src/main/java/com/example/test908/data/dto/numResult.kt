@@ -3,18 +3,18 @@ package com.example.test908.data.dto
 import com.example.test908.domain.model.NumResult
 import com.google.gson.annotations.SerializedName
 
-data class NumResultDto(
+data class ReviewsResponseDto(
     val copyright: String,
     @SerializedName("last_updated")
     val lastUpdated: String,
     @SerializedName("num_results")
     val numResults: Int,
-    val results: List<StoryDto>,
+    val results: List<ReviewDto>,
     val section: String,
     val status: String
 )
 
-fun NumResultDto.mapToDomain(): NumResult =
+fun ReviewsResponseDto.mapToDomain(): NumResult =
     NumResult(
         copyright = copyright,
         lastUpdated = lastUpdated,

@@ -7,7 +7,8 @@ interface ReviewsView {
         val reviewItems: List<ReviewUi> = listOf(),
         val date: String = "",
         val search: String = "",
-        val isLoading: Boolean = true
+        val isLoading: Boolean = true,
+        val isErrorMessage: String? = ""
     )
 
     sealed interface Event {
