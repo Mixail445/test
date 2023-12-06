@@ -16,7 +16,7 @@ fun reviewItemAdapterDelegate() =
             binding.run {
                 bodyItem.text = item.abstract
                 titleItem.text = item.title
-                dataItem.text = item.publishedDate.toString()
+                dataItem.text = item.date
                 nameItem.text = item.byline
                 Glide.with(itemView.context).load(item.pictureSrc)
                     .error(R.drawable.img)

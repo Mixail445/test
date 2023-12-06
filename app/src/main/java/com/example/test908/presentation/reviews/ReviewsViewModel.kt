@@ -4,14 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.test908.data.repository.DateUtils
 import com.example.test908.domain.repository.review.ReviewRepository
 import com.example.test908.domain.repository.review.model.Review
 import com.example.test908.domain.repository.review.model.mapToUi
 import com.example.test908.presentation.reviews.ReviewsView.Event
 import com.example.test908.presentation.reviews.ReviewsView.Model
 import com.example.test908.presentation.reviews.ReviewsView.UiLabel
+import com.example.test908.utils.DateUtils
+import com.example.test908.utils.DateUtils.toEpochMillis
 import com.example.test908.utils.ErrorHandel
+import com.example.test908.utils.format
 import com.example.test908.utils.onError
 import com.example.test908.utils.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,7 +57,7 @@ class ReviewsViewModel @Inject constructor(
     }
 
     private fun processError(throwable: Throwable) {
-        _uiLabels.value = UiLabel.ShowError(errorHandler.handleError(throwable))
+        _uiLabels.value = UiLabel.ShowError("Error", errorHandler.handleError(throwable))
     }
 
     private suspend fun requestReviews() {
@@ -65,8 +67,15 @@ class ReviewsViewModel @Inject constructor(
         repository.getReviews()
             .onSuccess { list ->
                 _reviews = list
+
+                val filteredReviews = filterByDateAndQuery(
+                    items = _reviews,
+                    date = searchDate,
+                    query = searchQuery
+                ).map { it.mapToUi() }
+
                 _uiState.update { model ->
-                    model.copy(reviewItems = _reviews.map { it.mapToUi() })
+                    model.copy(reviewItems = filteredReviews)
                 }
             }
             .onError(::processError)
@@ -79,10 +88,11 @@ class ReviewsViewModel @Inject constructor(
         Event.OnReviewClick -> TODO()
         is Event.OnUserSelectDate -> handleUserSelectDate(event.date)
         Event.RefreshReviews -> refreshReviews()
+        Event.OnCalendarClearDateClick -> onCalendarClearDateClick()
     }
 
     private fun handleOnCalendarClick() {
-        _uiLabels.value = UiLabel.ShowDatePicker
+        _uiLabels.value = UiLabel.ShowDatePicker(searchDate?.toEpochMillis())
     }
 
     private fun onQueryReviewsTextUpdated(value: String) {
@@ -98,12 +108,20 @@ class ReviewsViewModel @Inject constructor(
 
     private fun handleUserSelectDate(date: Long) {
         searchDate = DateUtils.parseLocalDateTime(date)
+
         val filteredReviews = filterByDateAndQuery(
             items = _reviews,
             date = searchDate,
             query = searchQuery
         ).map { it.mapToUi() }
-        _uiState.update { it.copy(reviewItems = filteredReviews) }
+
+        _uiState.update {
+            it.copy(
+                isClearDateIconVisible = true,
+                reviewItems = filteredReviews,
+                date = searchDate?.format(DateUtils.CALENDAR_UI_FORMAT).orEmpty()
+            )
+        }
     }
 
     private fun filterByDateAndQuery(
@@ -121,6 +139,24 @@ class ReviewsViewModel @Inject constructor(
     private fun refreshReviews() {
         viewModelScope.launch {
             requestReviews()
+        }
+    }
+
+    private fun onCalendarClearDateClick() {
+        searchDate = null
+
+        val filteredReviews = filterByDateAndQuery(
+            items = _reviews,
+            date = searchDate,
+            query = searchQuery
+        ).map { it.mapToUi() }
+
+        _uiState.update {
+            it.copy(
+                date = "",
+                isClearDateIconVisible = false,
+                reviewItems = filteredReviews
+            )
         }
     }
 }

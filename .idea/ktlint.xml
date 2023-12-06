@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="KtlintProjectConfiguration">
+    <enableKtlint>false</enableKtlint>
     <androidMode>true</androidMode>
     <treatAsErrors>false</treatAsErrors>
     <disabledRules>
       <list>
         <option value="filename" />
         <option value="max-line-length" />
+        <option value="no-blank-line-before-rbrace" />
+        <option value="no-consecutive-blank-lines" />
+        <option value="no-blank-line-before-rbrace" />
+        <option value="no-consecutive-blank-lines" />
+        <option value="no-trailing-spaces" />
       </list>
     </disabledRules>
   </component>
