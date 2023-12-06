@@ -2,13 +2,15 @@ package com.example.test908.presentation.reviews
 
 interface ReviewsView {
     data class Model(
+        val isLoading: Boolean = false,
         val reviewItems: List<ReviewUi> = listOf(),
         val date: String,
-        val query: String,
-        val isLoading: Boolean = false
+        val isClearDateIconVisible: Boolean = false,
+        val query: String
     )
 
     sealed interface Event {
+        data object OnCalendarClearDateClick : Event
         data object RefreshReviews : Event
         data class OnQueryReviewsTextUpdated(val value: String) : Event
         data object OnCalendarClick : Event
@@ -17,8 +19,7 @@ interface ReviewsView {
     }
 
     sealed interface UiLabel {
-        // todo if previous date not selected show current, if selected show previous selected
-        data object ShowDatePicker : UiLabel
-        data class ShowError(val message: String) : UiLabel
+        data class ShowDatePicker(val date: Long?) : UiLabel
+        data class ShowError(val title: String?, val message: String) : UiLabel
     }
 }

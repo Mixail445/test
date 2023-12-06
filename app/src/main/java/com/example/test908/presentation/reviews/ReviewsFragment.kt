@@ -8,14 +8,14 @@ import android.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.example.test908.R
 import com.example.test908.databinding.FragmentReviewsBinding
 import com.example.test908.presentation.common.RecyclerViewItemDecoration
 import com.example.test908.presentation.common.launchAndRepeatWithViewLifecycle
+import com.example.test908.presentation.common.showDatePickers
+import com.example.test908.presentation.common.showDialogError
 import com.example.test908.presentation.common.subscribe
 import com.example.test908.presentation.reviews.ReviewsView.Event
 import com.example.test908.presentation.reviews.ReviewsView.UiLabel
-import com.google.android.material.datepicker.MaterialDatePicker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -41,9 +41,6 @@ class ReviewsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViews()
         initViewModel()
-        searchReviewersByQuery()
-        refreshReviews()
-        showDatePicker()
     }
 
     private fun initViews() {
@@ -51,6 +48,22 @@ class ReviewsFragment : Fragment() {
             adapter = this@ReviewsFragment.adapter
             setHasFixedSize(true)
             addItemDecoration(RecyclerViewItemDecoration())
+        }
+        binding.ivIcCalendar.setOnClickListener {
+            viewModel.onEvent(Event.OnCalendarClick)
+        }
+        binding.ivIcClose.setOnClickListener {
+            viewModel.onEvent(Event.OnCalendarClearDateClick)
+        }
+        binding.svQuery.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?) = false
+            override fun onQueryTextChange(newText: String): Boolean {
+                viewModel.onEvent(Event.OnQueryReviewsTextUpdated(newText))
+                return true
+            }
+        })
+        binding.swipeContainer.setOnRefreshListener {
+            viewModel.onEvent(Event.RefreshReviews)
         }
     }
 
@@ -62,50 +75,30 @@ class ReviewsFragment : Fragment() {
     }
 
     private fun handleUiLabel(uiLabel: UiLabel): Unit = when (uiLabel) {
-        is UiLabel.ShowDatePicker -> showDatePicker()
-        is UiLabel.ShowError -> Unit // TODO()
+        is UiLabel.ShowDatePicker -> showFilterDatePicker(uiLabel.date)
+        is UiLabel.ShowError -> showDialogError(
+            title = "Error",
+            message = uiLabel.message
+        )
+    }
+
+    private fun showFilterDatePicker(date: Long?) {
+        showDatePickers(
+            date = date,
+            onDateSelectClick = {
+                viewModel.onEvent(Event.OnUserSelectDate(it))
+            }
+        )
     }
 
     private fun handleState(model: ReviewsView.Model): Unit = model.run {
-        binding.pbLoader.isVisible = model.isLoading
         binding.tvDate.text = model.date
         binding.svQuery.setQuery(model.query, false)
         adapter.items = model.reviewItems
-    }
-    private fun searchReviewersByQuery() {
-        binding.svQuery.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                viewModel.onEvent(Event.OnQueryReviewsTextUpdated(newText))
-                return true
-            }
-        })
+        binding.ivIcClose.isVisible = model.isClearDateIconVisible
+        binding.swipeContainer.isRefreshing = model.isLoading
     }
 
-    // todo move in fragment extension
-    private fun showDatePicker() {
-        val picker = MaterialDatePicker.Builder.datePicker()
-            .setTheme(R.style.MaterialCalendarTheme)
-            .setTitleText("SelectDataPicker")
-            .setSelection(null)
-            .build()
-        binding.clCalendarContainer.setOnClickListener {
-            viewModel.onEvent(Event.OnCalendarClick)
-            picker.show(this.childFragmentManager, "Tag")
-        }
-        picker.addOnPositiveButtonClickListener {
-            viewModel.onEvent(Event.OnUserSelectDate(it))
-        }
-    }
-    private fun refreshReviews() {
-        binding.swipeContainer.setOnRefreshListener {
-            viewModel.onEvent(Event.RefreshReviews)
-            binding.swipeContainer.isRefreshing = false
-        }
-    }
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

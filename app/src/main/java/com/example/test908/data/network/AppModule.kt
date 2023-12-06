@@ -1,5 +1,6 @@
 package com.example.test908.data.network
 
+import android.content.Context
 import com.example.test908.Constant
 import com.example.test908.data.repository.ReviewRepositoryImpl
 import com.example.test908.data.repository.review.remote.DispatchersProvider
@@ -12,12 +13,13 @@ import com.example.test908.utils.ErrorHandel
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -44,7 +46,7 @@ object AppModule {
     fun provideReviewRepository(reviewRepositoryImpl: ReviewRepositoryImpl): ReviewRepository = reviewRepositoryImpl
     @Singleton
     @Provides
-    fun provideErrorHandler(): ErrorHandel = ErrorHandel()
+    fun provideErrorHandler(@ApplicationContext context:Context): ErrorHandel = ErrorHandel(context)
 
     @Provides
     @Singleton

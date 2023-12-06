@@ -3,10 +3,7 @@ package com.example.test908.data.repository
 import com.example.test908.data.repository.review.model.ReviewDto
 import com.example.test908.data.repository.review.model.mapToDomain
 import com.example.test908.domain.repository.review.model.Review
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+import com.example.test908.utils.DateUtils
 
 fun ReviewDto.mapToDomain() = Review(
     abstract = abstract,
@@ -30,18 +27,4 @@ fun ReviewDto.mapToDomain() = Review(
     uri = uri
 )
 
-object DateUtils {
-    fun parseLocalDateTime(date: String) = try {
-        LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME)
-    } catch (e: Exception) {
-        e
-        null
-    }
 
-    fun parseLocalDateTime(date: Long) = try {
-        LocalDateTime.ofInstant(Instant.ofEpochMilli(date), ZoneId.systemDefault())
-    } catch (e: Exception) {
-        e
-        null
-    }
-}
