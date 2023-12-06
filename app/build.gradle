@@ -9,7 +9,7 @@ android {
     compileSdkVersion 34
     defaultConfig {
         applicationId "com.example.test908"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 32
         versionCode 1
         versionName "1.0"
@@ -34,10 +34,10 @@ android {
 }
 dependencies {
     //room db
-    def room_version = "2.6.1"
-    implementation "androidx.room:room-runtime:$room_version"
-    annotationProcessor "androidx.room:room-compiler:$room_version"
-    kapt "androidx.room:room-compiler:$room_version"
+//    def room_version = "2.6.1"
+//    implementation "androidx.room:room-runtime:$room_version"
+//    annotationProcessor "androidx.room:room-compiler:$room_version"
+//    kapt "androidx.room:room-compiler:$room_version"
 
     //adapterDelegates
     implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.0'
