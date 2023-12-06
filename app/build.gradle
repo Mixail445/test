@@ -9,7 +9,7 @@ android {
     compileSdkVersion 34
     defaultConfig {
         applicationId "com.example.test908"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 32
         versionCode 1
         versionName "1.0"
@@ -33,6 +33,13 @@ android {
     }
 }
 dependencies {
+    //room db
+//    def room_version = "2.6.1"
+//    implementation "androidx.room:room-runtime:$room_version"
+//    annotationProcessor "androidx.room:room-compiler:$room_version"
+//    kapt "androidx.room:room-compiler:$room_version"
+
+    //adapterDelegates
     implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.0'
 
     //Firebase
@@ -49,6 +56,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.15.1'
+
     //base
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.appcompat:appcompat:1.6.1'
@@ -57,7 +65,7 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    //swipetorefresh
+    //swipeToRefresh
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
     //Paging
     implementation "androidx.paging:paging-runtime-ktx:3.3.0-alpha02"

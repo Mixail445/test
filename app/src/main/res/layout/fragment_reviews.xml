@@ -30,7 +30,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            tools:listitem="@layout/item_reviews" />
+            tools:listitem="@layout/item_review" />
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     <ProgressBar
@@ -58,6 +58,15 @@
         app:layout_constraintHorizontal_bias="0.545"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ErrorText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@+id/swipeContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cl_calendar_container" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_calendar_container"
