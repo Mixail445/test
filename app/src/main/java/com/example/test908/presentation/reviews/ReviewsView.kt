@@ -15,7 +15,7 @@ interface ReviewsView {
         data class OnQueryReviewsTextUpdated(val value: String) : Event
         data object OnCalendarClick : Event
         data object OnReviewClick : Event
-        data class OnUserSelectDate(val date: Long) : Event
+        data class OnUserSelectPeriod(val firstDate: Long, val secondDate: Long) : Event
     }
 
     sealed interface UiLabel {

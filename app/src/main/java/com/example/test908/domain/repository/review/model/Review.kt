@@ -25,7 +25,31 @@ data class Review(
     val updatedDate: String,
     val uri: String,
     val url: String
-)
+) {
+    companion object {
+        fun mock() = Review(
+            abstract = "abstract",
+            byline = "byline",
+            createdDate ="",
+            desFacet = emptyList(),
+            geoFacet = emptyList(),
+        itemType = "",
+        kicker = "",
+            materialTypeFacet = "",
+        multimedia = emptyList(),
+        orgFacet= emptyList(),
+        perFacet= emptyList(),
+        publishedDate = LocalDateTime.of(2023, 1, 1, 1, 1),
+        section= "",
+        shortUrl = "",
+        subsection = "",
+        title = "",
+        updatedDate = "",
+        uri = "",
+        url = "",
+        )
+    }
+}
 
 fun Review.mapToUi(): ReviewUi =
     ReviewUi(
@@ -33,6 +57,6 @@ fun Review.mapToUi(): ReviewUi =
         byline = byline,
         date = publishedDate?.format(DateUtils.CALENDAR_UI_ITEM_FORMAT).orEmpty(),
         title = title,
-        pictureSrc = multimedia[0].url,
+        pictureSrc = multimedia.getOrNull(0)?.url,
         itemId = shortUrl
     )

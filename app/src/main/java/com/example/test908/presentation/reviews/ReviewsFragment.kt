@@ -26,6 +26,7 @@ class ReviewsFragment : Fragment() {
 
     private val adapter = ReviewsScreenAdapter(
         onItemClicked = {
+            viewModel.onEvent(Event.OnReviewClick)
         }
     )
 
@@ -85,8 +86,13 @@ class ReviewsFragment : Fragment() {
     private fun showFilterDatePicker(date: Long?) {
         showDatePickers(
             date = date,
-            onDateSelectClick = {
-                viewModel.onEvent(Event.OnUserSelectDate(it))
+            onDateSelectClick = { firstDate ->
+                showDatePickers(
+                    date = date,
+                    onDateSelectClick = { secondDate ->
+                        viewModel.onEvent(Event.OnUserSelectPeriod(firstDate, secondDate))
+                    }
+                )
             }
         )
     }

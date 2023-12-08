@@ -11,19 +11,18 @@ import com.example.test908.presentation.reviews.ReviewsView.Event
 import com.example.test908.presentation.reviews.ReviewsView.Model
 import com.example.test908.presentation.reviews.ReviewsView.UiLabel
 import com.example.test908.utils.DateUtils
-import com.example.test908.utils.DateUtils.toEpochMillis
 import com.example.test908.utils.ErrorHandel
-import com.example.test908.utils.format
 import com.example.test908.utils.onError
 import com.example.test908.utils.onSuccess
+import com.example.test908.utils.toEpochMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.time.LocalDateTime
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import javax.inject.Inject
 
 @HiltViewModel
 class ReviewsViewModel @Inject constructor(
@@ -32,7 +31,8 @@ class ReviewsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private var searchQuery: String = ""
-    private var searchDate: LocalDateTime? = null
+    private var searchDateStart: LocalDateTime? = null
+    private var searchDateEnd: LocalDateTime? = null
 
     private val _uiState = MutableStateFlow(
         Model(
@@ -70,7 +70,8 @@ class ReviewsViewModel @Inject constructor(
 
                 val filteredReviews = filterByDateAndQuery(
                     items = _reviews,
-                    date = searchDate,
+                    dateStart = searchDateStart,
+                    dateEnd = searchDateEnd,
                     query = searchQuery
                 ).map { it.mapToUi() }
 
@@ -85,14 +86,14 @@ class ReviewsViewModel @Inject constructor(
     fun onEvent(event: Event): Unit = when (event) {
         Event.OnCalendarClick -> handleOnCalendarClick()
         is Event.OnQueryReviewsTextUpdated -> onQueryReviewsTextUpdated(event.value)
-        Event.OnReviewClick -> TODO()
-        is Event.OnUserSelectDate -> handleUserSelectDate(event.date)
+        Event.OnReviewClick -> Unit // TODO()
         Event.RefreshReviews -> refreshReviews()
         Event.OnCalendarClearDateClick -> onCalendarClearDateClick()
+        is Event.OnUserSelectPeriod -> handleUserSelectPeriod(event.firstDate, event.secondDate)
     }
 
     private fun handleOnCalendarClick() {
-        _uiLabels.value = UiLabel.ShowDatePicker(searchDate?.toEpochMillis())
+        _uiLabels.value = UiLabel.ShowDatePicker(searchDateStart?.toEpochMillis())
     }
 
     private fun onQueryReviewsTextUpdated(value: String) {
@@ -100,18 +101,21 @@ class ReviewsViewModel @Inject constructor(
         _uiState.update { it.copy(query = value) }
         val filteredReviews = filterByDateAndQuery(
             items = _reviews,
-            date = searchDate,
+            dateStart = searchDateStart,
+            dateEnd = searchDateEnd,
             query = searchQuery
         ).map { it.mapToUi() }
         _uiState.update { it.copy(reviewItems = filteredReviews) }
     }
 
-    private fun handleUserSelectDate(date: Long) {
-        searchDate = DateUtils.parseLocalDateTime(date)
+    private fun handleUserSelectPeriod(dateStart: Long, dateEnd: Long) {
+        searchDateStart = DateUtils.parseLocalDateTime(dateStart)
+        searchDateEnd = DateUtils.parseLocalDateTime(dateEnd)
 
         val filteredReviews = filterByDateAndQuery(
             items = _reviews,
-            date = searchDate,
+            dateStart = searchDateStart,
+            dateEnd = searchDateEnd,
             query = searchQuery
         ).map { it.mapToUi() }
 
@@ -119,20 +123,29 @@ class ReviewsViewModel @Inject constructor(
             it.copy(
                 isClearDateIconVisible = true,
                 reviewItems = filteredReviews,
-                date = searchDate?.format(DateUtils.CALENDAR_UI_FORMAT).orEmpty()
+                date = DateUtils.getCalendarUiDate(searchDateStart, searchDateEnd)
             )
         }
     }
 
     private fun filterByDateAndQuery(
         items: List<Review>,
-        date: LocalDateTime? = null,
-        query: String = ""
+        dateStart: LocalDateTime?,
+        dateEnd: LocalDateTime?,
+        query: String
     ) = items.filter {
-        if (date == null) {
+        if (dateStart == null || dateEnd == null) {
             true
         } else {
-            it.publishedDate?.toLocalDate() == date.toLocalDate()
+            val current = it.publishedDate?.toLocalDate()
+            if (current == null) {
+                false
+            } else {
+                val first = dateStart.toLocalDate()
+                val second = dateEnd.toLocalDate()
+                current == first || current == second ||
+                        current.isAfter(first) && current.isBefore(second)
+            }
         } && it.title.contains(query, true)
     }
 
@@ -143,11 +156,12 @@ class ReviewsViewModel @Inject constructor(
     }
 
     private fun onCalendarClearDateClick() {
-        searchDate = null
-
+        searchDateStart = null
+        searchDateEnd = null
         val filteredReviews = filterByDateAndQuery(
             items = _reviews,
-            date = searchDate,
+            dateStart = searchDateStart,
+            dateEnd = searchDateEnd,
             query = searchQuery
         ).map { it.mapToUi() }
 
