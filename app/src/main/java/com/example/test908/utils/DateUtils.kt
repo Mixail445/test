@@ -15,7 +15,7 @@ fun LocalDateTime.toEpochMillis() =
     ZonedDateTime.of(this, ZoneId.systemDefault()).toInstant().toEpochMilli()
 
 object DateUtils {
-    const val CALENDAR_UI_FORMAT = "yyyy/MM/dd"
+    private const val CALENDAR_UI_FORMAT = "yyyy/MM/dd"
     const val CALENDAR_UI_ITEM_FORMAT = "yyyy/MM/dd   mm:ss:mm"
     fun parseLocalDateTime(date: String?) = try {
         LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE_TIME)
@@ -36,7 +36,7 @@ object DateUtils {
             return ""
         } else {
             firstDate.format(CALENDAR_UI_FORMAT).orEmpty() + " - " +
-                    secondDate.format(CALENDAR_UI_FORMAT).orEmpty()
+                secondDate.format(CALENDAR_UI_FORMAT).orEmpty()
         }
     }
 }

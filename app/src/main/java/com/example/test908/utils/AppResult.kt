@@ -4,7 +4,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
-/*
+/**
 * A discriminated union that encapsulates a successful outcome with a value of type [R]
 * or a [E] error.
 */
@@ -18,7 +18,7 @@ sealed class AppResult<out R, out E> {
     }
 }
 
-/*
+/**
 * Calls the specified function [block] and returns its encapsulated result if invocation was successful,
 * catching any [Throwable] exception that was thrown from the block function execution
 * and encapsulating it as a failure.
@@ -32,7 +32,7 @@ inline fun <R> runCatching(block: () -> R): AppResult<R, Throwable> {
     }
 }
 
-/*
+/**
 * Calls the specified function [block] and returns its encapsulated result if invocation was successful,
 * catching any Throwable exception that was thrown from the block function execution, then mapping it
 * with [errorMapper] and encapsulating it as a failure.
@@ -49,7 +49,7 @@ inline fun <R, E> runCatching(
     }
 }
 
-/*
+/**
 * Performs the given [action] on the encapsulated value if this instance represents success.
 * Returns the original [Result] unchanged.
 */

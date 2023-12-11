@@ -3,23 +3,28 @@ package com.example.test908.data.network
 import android.content.Context
 import com.example.test908.Constant
 import com.example.test908.data.repository.ReviewRepositoryImpl
+import com.example.test908.data.repository.review.local.ReviewDao
+import com.example.test908.data.repository.review.local.ReviewLocalSourceImpl
 import com.example.test908.data.repository.review.remote.DispatchersProvider
 import com.example.test908.data.repository.review.remote.DispatchersProviderImpl
 import com.example.test908.data.repository.review.remote.ReviewApi
 import com.example.test908.data.repository.review.remote.ReviewRemoteSourceImpl
+import com.example.test908.domain.repository.review.ReviewLocalSource
 import com.example.test908.domain.repository.review.ReviewRemoteSource
 import com.example.test908.domain.repository.review.ReviewRepository
 import com.example.test908.utils.ErrorHandel
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -37,6 +42,13 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideReviewsLocalSource(
+        dao: ReviewDao,
+        dispatchersProvider: DispatchersProvider
+    ): ReviewLocalSource = ReviewLocalSourceImpl(dao, dispatchersProvider)
+
+    @Singleton
+    @Provides
     fun provideDispatcher(): DispatchersProvider {
         return DispatchersProviderImpl
     }
@@ -44,16 +56,23 @@ object AppModule {
     @Singleton
     @Provides
     fun provideReviewRepository(reviewRepositoryImpl: ReviewRepositoryImpl): ReviewRepository = reviewRepositoryImpl
+
     @Singleton
     @Provides
-    fun provideErrorHandler(@ApplicationContext context:Context): ErrorHandel = ErrorHandel(context)
+    fun provideErrorHandler(@ApplicationContext context: Context): ErrorHandel = ErrorHandel(
+        context
+    )
+    private val moshi =
+        Moshi.Builder()
+            .addLast(KotlinJsonAdapterFactory())
+            .build()
 
     @Provides
     @Singleton
     fun provideRetrofit(
         okHttpClient: OkHttpClient
     ): Retrofit = Retrofit.Builder()
-        .addConverterFactory(GsonConverterFactory.create())
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .baseUrl(Constant.BASE_URL)
         .client(okHttpClient)
         .build()

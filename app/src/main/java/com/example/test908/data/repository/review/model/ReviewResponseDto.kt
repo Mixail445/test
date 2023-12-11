@@ -1,12 +1,14 @@
 package com.example.test908.data.repository.review.model
 
-import com.google.gson.annotations.SerializedName
+
+import com.squareup.moshi.Json
+
 
 data class ReviewsResponseDto(
     val copyright: String,
-    @SerializedName("last_updated")
+    @Json(name = "last_updated")
     val lastUpdated: String,
-    @SerializedName("num_results")
+    @Json(name = "num_results")
     val numResults: Int,
     val results: List<ReviewDto>,
     val section: String,

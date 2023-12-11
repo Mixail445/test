@@ -3,10 +3,11 @@ package com.example.test908.presentation.reviews
 interface ReviewsView {
     data class Model(
         val isLoading: Boolean = false,
-        val reviewItems: List<ReviewUi> = listOf(),
+        val reviewItems: List<ReviewUi> = emptyList(),
         val date: String,
         val isClearDateIconVisible: Boolean = false,
-        val query: String
+        val query: String,
+        val timer: String?
     )
 
     sealed interface Event {

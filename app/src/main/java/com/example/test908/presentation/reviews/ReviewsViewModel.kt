@@ -3,41 +3,48 @@ package com.example.test908.presentation.reviews
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.example.test908.domain.repository.review.ReviewRepository
 import com.example.test908.domain.repository.review.model.Review
-import com.example.test908.domain.repository.review.model.mapToUi
 import com.example.test908.presentation.reviews.ReviewsView.Event
 import com.example.test908.presentation.reviews.ReviewsView.Model
 import com.example.test908.presentation.reviews.ReviewsView.UiLabel
 import com.example.test908.utils.DateUtils
 import com.example.test908.utils.ErrorHandel
+import com.example.test908.utils.UtilTimer
 import com.example.test908.utils.onError
 import com.example.test908.utils.onSuccess
 import com.example.test908.utils.toEpochMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
+import java.time.LocalDateTime
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDateTime
-import javax.inject.Inject
 
 @HiltViewModel
 class ReviewsViewModel @Inject constructor(
     private val repository: ReviewRepository,
-    private val errorHandler: ErrorHandel
+    private val errorHandler: ErrorHandel,
+    private val utilTimer: UtilTimer,
+    private val reviewUiMapper: ReviewUiMapper
 ) : ViewModel() {
 
     private var searchQuery: String = ""
     private var searchDateStart: LocalDateTime? = null
     private var searchDateEnd: LocalDateTime? = null
 
+
     private val _uiState = MutableStateFlow(
         Model(
             query = searchQuery,
-            date = ""
+            date = "",
+            timer = ""
         )
     )
     val uiState: StateFlow<Model> = _uiState.asStateFlow()
@@ -47,12 +54,14 @@ class ReviewsViewModel @Inject constructor(
     private var _reviews: List<Review> = emptyList()
 
     init {
+        showTimer()
         viewModelScope.launch {
             initData()
         }
     }
 
     private suspend fun initData() {
+        getDataFromDb()
         requestReviews()
     }
 
@@ -64,9 +73,9 @@ class ReviewsViewModel @Inject constructor(
         if (uiState.value.isLoading) return
         _uiState.update { it.copy(isLoading = true) }
 
-        repository.getReviews()
+        repository.getReviewsRemote()
             .onSuccess { list ->
-                _reviews = list
+                _reviews = list as List<Review>
 
                 val filteredReviews = filterByDateAndQuery(
                     items = _reviews,
@@ -81,6 +90,21 @@ class ReviewsViewModel @Inject constructor(
             }
             .onError(::processError)
         _uiState.update { it.copy(isLoading = false) }
+    }
+
+    private suspend fun getDataFromDb() {
+        repository.fetchReviews().map { _reviews = it as List<Review> }.stateIn(viewModelScope)
+                val filteredReviews = filterByDateAndQuery(
+                    items = _reviews,
+                    dateStart = searchDateStart,
+                    dateEnd = searchDateEnd,
+                    query = searchQuery
+                ).map { it.mapToUi() }
+
+                _uiState.update { model ->
+                    model.copy(reviewItems = filteredReviews)
+                }
+
     }
 
     fun onEvent(event: Event): Unit = when (event) {
@@ -134,7 +158,8 @@ class ReviewsViewModel @Inject constructor(
         dateEnd: LocalDateTime?,
         query: String
     ) = items.filter {
-        if (dateStart == null || dateEnd == null) {
+        (
+            if (dateStart == null || dateEnd == null) {
             true
         } else {
             val current = it.publishedDate?.toLocalDate()
@@ -143,10 +168,10 @@ class ReviewsViewModel @Inject constructor(
             } else {
                 val first = dateStart.toLocalDate()
                 val second = dateEnd.toLocalDate()
-                current == first || current == second ||
-                        current.isAfter(first) && current.isBefore(second)
+                !current.isBefore(first) && !current.isAfter(second)
             }
-        } && it.title.contains(query, true)
+        }
+        ) && it.title?.contains(query, true) == true
     }
 
     private fun refreshReviews() {
@@ -173,4 +198,13 @@ class ReviewsViewModel @Inject constructor(
             )
         }
     }
+    private fun showTimer() {
+        viewModelScope.launch {
+            utilTimer.time.asFlow().collect { time ->
+                _uiState.update {
+                    it.copy(timer = reviewUiMapper.mapTimer(time))
+                }
+
+            }
+        } }
 }

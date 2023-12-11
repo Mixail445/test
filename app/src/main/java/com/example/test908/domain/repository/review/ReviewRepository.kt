@@ -2,9 +2,10 @@ package com.example.test908.domain.repository.review
 
 import com.example.test908.domain.repository.review.model.Review
 import com.example.test908.utils.AppResult
-import javax.inject.Singleton
+import kotlinx.coroutines.flow.Flow
 
 
 interface ReviewRepository {
-    suspend fun getReviews(): AppResult<List<Review>, Throwable>
+    suspend fun getReviewsRemote(): AppResult<List<Review?>, Throwable>
+    suspend fun fetchReviews(): Flow<List<Review?>>
 }

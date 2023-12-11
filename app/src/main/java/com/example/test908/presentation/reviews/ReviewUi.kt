@@ -8,5 +8,5 @@ data class ReviewUi(
     val byline: String,
     val date: String,
     val title: String,
-    val pictureSrc: String?
+    val pictureSrc: String
 ) : BaseItem

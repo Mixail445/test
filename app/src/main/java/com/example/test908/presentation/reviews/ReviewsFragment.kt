@@ -23,7 +23,6 @@ class ReviewsFragment : Fragment() {
     private var _binding: FragmentReviewsBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ReviewsViewModel by viewModels()
-
     private val adapter = ReviewsScreenAdapter(
         onItemClicked = {
             viewModel.onEvent(Event.OnReviewClick)
@@ -103,6 +102,7 @@ class ReviewsFragment : Fragment() {
         adapter.items = model.reviewItems
         binding.ivIcClose.isVisible = model.isClearDateIconVisible
         binding.swipeContainer.isRefreshing = model.isLoading
+        binding.tvTimer.text = model.timer
     }
 
     override fun onDestroy() {

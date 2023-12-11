@@ -4,9 +4,8 @@ import com.example.test908.domain.repository.review.ReviewRemoteSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
-class ReviewRemoteSourceImpl (
+class ReviewRemoteSourceImpl(
     private val api: ReviewApi,
     private val dispatchersProvider: DispatchersProvider
 ) : ReviewRemoteSource {
