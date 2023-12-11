@@ -8,45 +8,20 @@ import java.time.LocalDateTime
 data class Review(
     val abstract: String,
     val byline: String,
-    val createdDate: String,
-    val desFacet: List<String>,
-    val geoFacet: List<String>,
-    val itemType: String,
-    val kicker: String,
-    val materialTypeFacet: String,
     val multimedia: List<Multimedia>,
-    val orgFacet: List<String>,
-    val perFacet: List<String>,
     val publishedDate: LocalDateTime?,
-    val section: String,
-    val shortUrl: String,
-    val subsection: String,
     val title: String,
-    val updatedDate: String,
-    val uri: String,
-    val url: String
+    val shortUrl:String
+
 ) {
     companion object {
         fun mock() = Review(
             abstract = "abstract",
             byline = "byline",
-            createdDate ="",
-            desFacet = emptyList(),
-            geoFacet = emptyList(),
-        itemType = "",
-        kicker = "",
-            materialTypeFacet = "",
-        multimedia = emptyList(),
-        orgFacet= emptyList(),
-        perFacet= emptyList(),
-        publishedDate = LocalDateTime.of(2023, 1, 1, 1, 1),
-        section= "",
-        shortUrl = "",
-        subsection = "",
-        title = "",
-        updatedDate = "",
-        uri = "",
-        url = "",
+            multimedia = emptyList(),
+            publishedDate = LocalDateTime.of(2023, 1, 1, 1, 1),
+            title = "",
+            shortUrl = ""
         )
     }
 }
@@ -60,3 +35,4 @@ fun Review.mapToUi(): ReviewUi =
         pictureSrc = multimedia.getOrNull(0)?.url,
         itemId = shortUrl
     )
+
