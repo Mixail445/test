@@ -11,7 +11,6 @@ class UtilTimer @Inject constructor() {
             override fun onTick(millisUntilFinished: Long) {
              time.postValue((((Long.MAX_VALUE) / 1000 - millisUntilFinished / 1000).toString()))
             }
-
             override fun onFinish() {
                 Unit
             }

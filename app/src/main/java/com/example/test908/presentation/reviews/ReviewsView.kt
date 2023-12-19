@@ -1,6 +1,10 @@
 package com.example.test908.presentation.reviews
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 interface ReviewsView {
+    @Parcelize
     data class Model(
         val isLoading: Boolean = false,
         val reviewItems: List<ReviewUi> = emptyList(),
@@ -8,7 +12,7 @@ interface ReviewsView {
         val isClearDateIconVisible: Boolean = false,
         val query: String,
         val timer: String?
-    )
+    ) : Parcelable
 
     sealed interface Event {
         data object OnCalendarClearDateClick : Event

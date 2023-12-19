@@ -29,7 +29,7 @@
             android:gravity="center"
             android:text="Reviewes"
             android:textAllCaps="false"
-            android:textColor="@color/orr"
+            android:textColor="@color/orange"
             android:textSize="14sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

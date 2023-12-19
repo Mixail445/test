@@ -110,3 +110,4 @@ class ReviewsFragment : Fragment() {
         _binding = null
     }
 }
+
