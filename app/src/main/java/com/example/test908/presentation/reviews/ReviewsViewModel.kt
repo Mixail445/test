@@ -2,6 +2,7 @@ package com.example.test908.presentation.reviews
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
@@ -27,25 +28,28 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+private const val TIMER_KEY = "timer_key"
+private const val STATE_KEY_REVIEW = "FRAGMENT_STATE_KEY"
+
 @HiltViewModel
 class ReviewsViewModel @Inject constructor(
     private val repository: ReviewRepository,
     private val errorHandler: ErrorHandel,
     private val utilTimer: UtilTimer,
-    private val reviewUiMapper: ReviewUiMapper
+    private val reviewUiMapper: ReviewUiMapper,
+    private val state: SavedStateHandle
 ) : ViewModel() {
-
     private var searchQuery: String = ""
     private var searchDateStart: LocalDateTime? = null
     private var searchDateEnd: LocalDateTime? = null
 
-
     private val _uiState = MutableStateFlow(
-        Model(
-            query = searchQuery,
-            date = "",
-            timer = ""
-        )
+        state.get<Model>(STATE_KEY_REVIEW) ?: produceInitialState()
+    )
+    private fun produceInitialState() = Model(
+        query = searchQuery,
+        date = "",
+        timer = state[TIMER_KEY]
     )
     val uiState: StateFlow<Model> = _uiState.asStateFlow()
     private val _uiLabels = MutableLiveData<UiLabel>()
@@ -58,8 +62,10 @@ class ReviewsViewModel @Inject constructor(
         viewModelScope.launch {
             initData()
         }
+        (state.get<String>(TIMER_KEY))?.let { time ->
+            _uiState.update { it.copy(timer = reviewUiMapper.mapTimer(time)) }
+        }
     }
-
     private suspend fun initData() {
         getDataFromDb()
         requestReviews()
@@ -94,16 +100,16 @@ class ReviewsViewModel @Inject constructor(
 
     private suspend fun getDataFromDb() {
         repository.fetchReviews().map { _reviews = it as List<Review> }.stateIn(viewModelScope)
-                val filteredReviews = filterByDateAndQuery(
-                    items = _reviews,
-                    dateStart = searchDateStart,
-                    dateEnd = searchDateEnd,
-                    query = searchQuery
-                ).map { it.mapToUi() }
+        val filteredReviews = filterByDateAndQuery(
+            items = _reviews,
+            dateStart = searchDateStart,
+            dateEnd = searchDateEnd,
+            query = searchQuery
+        ).map { it.mapToUi() }
 
-                _uiState.update { model ->
-                    model.copy(reviewItems = filteredReviews)
-                }
+        _uiState.update { model ->
+            model.copy(reviewItems = filteredReviews)
+        }
 
     }
 
@@ -151,7 +157,6 @@ class ReviewsViewModel @Inject constructor(
             )
         }
     }
-
     private fun filterByDateAndQuery(
         items: List<Review>,
         dateStart: LocalDateTime?,
@@ -159,19 +164,19 @@ class ReviewsViewModel @Inject constructor(
         query: String
     ) = items.filter {
         (
-            if (dateStart == null || dateEnd == null) {
-            true
-        } else {
-            val current = it.publishedDate?.toLocalDate()
-            if (current == null) {
-                false
-            } else {
-                val first = dateStart.toLocalDate()
-                val second = dateEnd.toLocalDate()
-                !current.isBefore(first) && !current.isAfter(second)
-            }
-        }
-        ) && it.title?.contains(query, true) == true
+                if (dateStart == null || dateEnd == null) {
+                    true
+                } else {
+                    val current = it.publishedDate?.toLocalDate()
+                    if (current == null) {
+                        false
+                    } else {
+                        val first = dateStart.toLocalDate()
+                        val second = dateEnd.toLocalDate()
+                        !current.isBefore(first) && !current.isAfter(second)
+                    }
+                }
+                ) && it?.title?.contains(query, true) == true
     }
 
     private fun refreshReviews() {
@@ -198,13 +203,21 @@ class ReviewsViewModel @Inject constructor(
             )
         }
     }
+    private fun getTimer(): LiveData<String> {
+        return state.getLiveData(TIMER_KEY)
+    }
+    private fun saveTimer(newName: String) {
+        state[TIMER_KEY] = newName
+    }
     private fun showTimer() {
         viewModelScope.launch {
-            utilTimer.time.asFlow().collect { time ->
-                _uiState.update {
-                    it.copy(timer = reviewUiMapper.mapTimer(time))
+                utilTimer.start(state.get<String>(TIMER_KEY)?.toLong() ?: 0)
+                utilTimer.time.asFlow().collect { time ->
+                    saveTimer(time.toString())
+                    _uiState.update {
+                        it.copy(timer = reviewUiMapper.mapTimer(getTimer().value))
+                    }
                 }
-
             }
-        } }
-}
+        }
+    }
