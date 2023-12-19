@@ -1,42 +1,67 @@
 package com.example.test908.presentation.main
 
-import android.graphics.Color
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import com.example.test908.R
 import com.example.test908.databinding.ActivityMainBinding
+import com.example.test908.presentation.common.launchAndRepeatWithViewLifecycle
+import com.example.test908.presentation.common.subscribe
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val windows = window
+        initViewModel()
+        initViews()
+    }
+    private fun initViews() {
+        binding.toolbar.critics.setOnClickListener {
+            viewModel.onEvent(MainView.Event.OnClickCritic)
+
+        }
+        binding.toolbar.reviewes.setOnClickListener {
+            viewModel.onEvent(MainView.Event.OnClickReview)
+        }
+    }
+    private fun initViewModel() {
+        with(viewModel) {
+            subscribe(uiLabels, ::handleUiLabel)
+            launchAndRepeatWithViewLifecycle { viewModel.uiState.collect(::handleState) }
+        }
+    }
+    private fun handleState(model: MainView.Model): Unit = model.run {
+        with(binding.toolbar) {
+            critics.setTextColor(criticColor)
+            reviewes.setTextColor(reviewColor)
+            toolbarr.setBackgroundColor(toolbarBackgroundColor)
+            reviewes.setBackgroundColor(reviewBackgroundColor)
+            critics.setBackgroundColor(criticBackgroundColor)
+        }
+    }
+    private fun handleUiLabel(uiLabel: MainView.UiLabel): Unit = when (uiLabel) {
+        MainView.UiLabel.MoveFragmentCritic -> moveToFragmentCritic()
+        MainView.UiLabel.MoveFragmentReview -> moveToFragmentReview()
+    }
+
+    private fun moveToFragmentReview() {
         val navHostFragment =
             supportFragmentManager.findFragmentById(R.id.NavHostFragment) as NavHostFragment
         val navController = navHostFragment.navController
-        binding.toolbar.critics.setOnClickListener {
-            navController.navigate(R.id.fragCritic)
-            binding.toolbar.critics.setTextColor(Color.parseColor("#b5e2fa"))
-            binding.toolbar.reviewes.setTextColor(Color.WHITE)
-            binding.toolbar.reviewes.setBackgroundResource(R.drawable.rounded_left_1)
-            binding.toolbar.critics.setBackgroundResource(R.drawable.rounded_right_1)
-            binding.toolbar.toolbarr.setBackgroundResource(R.color.orr1)
-            windows.statusBarColor = this.resources.getColor(R.color.orr1, resources.newTheme())
-        }
-        binding.toolbar.reviewes.setOnClickListener {
-            navController.navigate(R.id.fragRewiewes2)
-            binding.toolbar.critics.setTextColor(Color.WHITE)
-            binding.toolbar.reviewes.setTextColor(Color.parseColor("#F7A072"))
-            binding.toolbar.toolbarr.setBackgroundResource(R.color.orr)
-            binding.toolbar.reviewes.setBackgroundResource(R.drawable.rounded_left)
-            binding.toolbar.critics.setBackgroundResource(R.drawable.rounded_right)
-            windows.statusBarColor = this.resources.getColor(R.color.orr, resources.newTheme())
-        }
+        navController.navigate(R.id.fragRewiewes2)
+    }
+
+    private fun moveToFragmentCritic() {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.NavHostFragment) as NavHostFragment
+        val navController = navHostFragment.navController
+        navController.navigate(R.id.fragCritic)
     }
 }
