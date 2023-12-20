@@ -19,7 +19,6 @@ class MainView {
     }
 
     sealed interface UiLabel {
-        data object MoveFragmentCritic : UiLabel
-        data object MoveFragmentReview : UiLabel
+        data class NavigateToNext(val screen: Screens) : UiLabel
     }
 }

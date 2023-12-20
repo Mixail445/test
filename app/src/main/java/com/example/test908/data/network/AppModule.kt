@@ -12,6 +12,8 @@ import com.example.test908.data.repository.review.remote.ReviewRemoteSourceImpl
 import com.example.test908.domain.repository.review.ReviewLocalSource
 import com.example.test908.domain.repository.review.ReviewRemoteSource
 import com.example.test908.domain.repository.review.ReviewRepository
+import com.example.test908.presentation.main.Router
+import com.example.test908.presentation.main.RouterImpl
 import com.example.test908.utils.ErrorHandel
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -46,6 +48,10 @@ object AppModule {
         dao: ReviewDao,
         dispatchersProvider: DispatchersProvider
     ): ReviewLocalSource = ReviewLocalSourceImpl(dao, dispatchersProvider)
+
+    @Singleton
+    @Provides
+    fun provideRouter(): Router = RouterImpl()
 
     @Singleton
     @Provides
