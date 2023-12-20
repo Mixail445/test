@@ -11,7 +11,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val mainUiMapper: MainUiMapper) : ViewModel() {
+class MainViewModel @Inject constructor(
+    private val mainUiMapper: MainUiMapper
+
+) : ViewModel() {
     private val _uiState = MutableStateFlow(
         MainView.Model(
             reviewColor = mainUiMapper.orangeColor(),
@@ -31,7 +34,7 @@ class MainViewModel @Inject constructor(private val mainUiMapper: MainUiMapper) 
         MainView.Event.OnClickReview -> handlerOnCLickReview()
     }
     private fun handlerOnCLickCritic() {
-        _uiLabels.value = MainView.UiLabel.MoveFragmentCritic
+        _uiLabels.value = MainView.UiLabel.NavigateToNext(Screens.Critics)
         _uiState.update {
             it.copy(
                 reviewColor = mainUiMapper.whiteColor(),
@@ -45,7 +48,7 @@ class MainViewModel @Inject constructor(private val mainUiMapper: MainUiMapper) 
         }
     }
     private fun handlerOnCLickReview() {
-        _uiLabels.value = MainView.UiLabel.MoveFragmentReview
+        _uiLabels.value = MainView.UiLabel.NavigateToNext(Screens.Reviews)
         _uiState.update {
             it.copy(
                 reviewColor = mainUiMapper.orangeColor(),
