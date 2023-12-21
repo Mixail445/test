@@ -1,7 +1,6 @@
 package com.example.test908.presentation.main
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.test908.databinding.ActivityMainBinding
@@ -18,6 +17,10 @@ class MainActivity : AppCompatActivity() {
 
     @Inject
     lateinit var router: Router
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        viewModel.saveState()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
