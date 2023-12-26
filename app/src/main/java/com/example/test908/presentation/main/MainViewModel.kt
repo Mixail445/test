@@ -1,4 +1,4 @@
-    package com.example.test908.presentation.main
+package com.example.test908.presentation.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -34,6 +34,9 @@ class MainViewModel @Inject constructor(
     fun onEvent(event: MainView.Event): Unit = when (event) {
         MainView.Event.OnClickCritic -> handlerOnCLickCritic()
         MainView.Event.OnClickReview -> handlerOnCLickReview()
+    }
+    init {
+        stateHandle[STATE_KEY] = _uiState.value
     }
     private fun handlerOnCLickCritic() {
         _uiLabels.value = MainView.UiLabel.NavigateToNext(Screens.Critics)

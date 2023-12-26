@@ -7,7 +7,6 @@ import com.example.test908.R
 import javax.inject.Inject
 
 class RouterImpl @Inject constructor() : Router {
-
     private var navController: NavController? = null
     override fun init(supportFragmentManager: FragmentManager) {
         val navHostFragment =
@@ -24,17 +23,17 @@ class RouterImpl @Inject constructor() : Router {
         }
     }
     private fun moveToFragmentReview() {
-       navHelper(R.id.fragRewiewes2)
+        navController?.navigateUp()
     }
     private fun moveToFragmentCritic() {
-       navHelper(R.id.fragCritic)
+        navHelper(R.id.fragCritic)
     }
     override fun back() {
         navController?.popBackStack()
     }
     private fun navHelper(id: Int) {
         if (navController?.previousBackStackEntry?.id != null) {
-            navController?.popBackStack()
+            navController?.popBackStack(id, false)
         } else {
             navController?.navigate(id)
         }

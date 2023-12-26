@@ -39,38 +39,30 @@ class ReviewsViewModel @Inject constructor(
     private val reviewUiMapper: ReviewUiMapper,
     private val state: SavedStateHandle
 ) : ViewModel() {
-
-
-    private val _timer = MutableStateFlow(
-        state[TIMER_KEY] ?: ""
-    )
-    init {
-        showTimer()
-        viewModelScope.launch {
-            initData()
-        }
-    }
-
     private var searchQuery: String = ""
     private var searchDateStart: LocalDateTime? = null
     private var searchDateEnd: LocalDateTime? = null
+
     private val _uiState = MutableStateFlow(
         state.get<Model>(STATE_KEY_REVIEW) ?: produceInitialState()
     )
-
-
     private fun produceInitialState() = Model(
         query = searchQuery,
         date = "",
         timer = state[TIMER_KEY]
     )
-
     val uiState: StateFlow<Model> = _uiState.asStateFlow()
     private val _uiLabels = MutableLiveData<UiLabel>()
     val uiLabels: LiveData<UiLabel> get() = _uiLabels
 
     private var _reviews: List<Review> = emptyList()
 
+    init {
+        showTimer()
+        viewModelScope.launch {
+            initData()
+        }
+    }
 
 
     private suspend fun initData() {
@@ -164,7 +156,6 @@ class ReviewsViewModel @Inject constructor(
             )
         }
     }
-
     private fun filterByDateAndQuery(
         items: List<Review>,
         dateStart: LocalDateTime?,
@@ -184,7 +175,7 @@ class ReviewsViewModel @Inject constructor(
                         !current.isBefore(first) && !current.isAfter(second)
                     }
                 }
-                ) && it.title?.contains(query, true) == true
+                ) && it?.title?.contains(query, true) == true
     }
 
     private fun refreshReviews() {
@@ -211,20 +202,30 @@ class ReviewsViewModel @Inject constructor(
             )
         }
     }
+    private fun getTimer(): LiveData<String> {
+        return state.getLiveData(TIMER_KEY)
+    }
+    private fun saveTimer(newName: String) {
+        state[TIMER_KEY] = newName
+    }
+    private val _timer = MutableStateFlow(
+        state[TIMER_KEY] ?: ""
+    )
+
     private fun showTimer() {
         viewModelScope.launch {
             utilTimer.time.asFlow().collect { time ->
+                saveTimer(time)
                 _uiState.update {
-                    it.copy(timer = reviewUiMapper.mapTimer(time))
+                    it.copy(timer = reviewUiMapper.mapTimer(getTimer().value))
                 }
-                state[TIMER_KEY] = time
-                _timer.value = time
             }
+
         }
     }
     override fun onCleared() {
+        state[STATE_KEY_REVIEW] = _uiState.value
         state[TIMER_KEY] = _timer.value
         super.onCleared()
     }
-
 }
