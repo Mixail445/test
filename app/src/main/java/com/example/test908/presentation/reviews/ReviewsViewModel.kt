@@ -63,7 +63,7 @@ class ReviewsViewModel @Inject constructor(
             initData()
         }
         (state.get<String>(TIMER_KEY))?.let { time ->
-            _uiState.update { it.copy(timer = reviewUiMapper.mapTimer(time)) }
+            _uiState.update { it.copy(timer = reviewUiMapper.convertTimer(time.toLong())) }
         }
     }
     private suspend fun initData() {
@@ -203,9 +203,6 @@ class ReviewsViewModel @Inject constructor(
             )
         }
     }
-    private fun getTimer(): LiveData<String> {
-        return state.getLiveData(TIMER_KEY)
-    }
     private fun saveTimer(newName: String) {
         state[TIMER_KEY] = newName
     }
@@ -215,7 +212,7 @@ class ReviewsViewModel @Inject constructor(
                 utilTimer.time.asFlow().collect { time ->
                     saveTimer(time.toString())
                     _uiState.update {
-                        it.copy(timer = reviewUiMapper.mapTimer(getTimer().value))
+                        it.copy(timer = reviewUiMapper.convertTimer(time))
                     }
                 }
             }
