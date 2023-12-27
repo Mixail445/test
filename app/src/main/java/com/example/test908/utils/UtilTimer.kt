@@ -1,26 +1,40 @@
 package com.example.test908.utils
 
-import android.os.CountDownTimer
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class UtilTimer @Inject constructor() {
-    val time = MutableLiveData<String>()
-    private fun timer() {
-        val timer = object : CountDownTimer(Long.MAX_VALUE, 1000) {
-            override fun onTick(millisUntilFinished: Long) {
-             time.postValue((((Long.MAX_VALUE) / 1000 - millisUntilFinished / 1000).toString()))
-            }
 
-            override fun onFinish() {
-                Unit
+    private var isStarted: Boolean = false
+
+    private val handler = CoroutineExceptionHandler { _, _ ->
+        Log.d("", "TODO")
+    }
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO + handler)
+
+    val time = MutableLiveData<Long>()
+
+    private var currentValue: Long = 0
+    fun start(defaultValue: Long = 0) {
+        isStarted = true
+        currentValue = defaultValue
+        scope.launch {
+            while (isStarted) {
+                delay(1000)
+                currentValue += 1
+                time.postValue(currentValue)
             }
         }
-        timer.start()
     }
-    init {
-        timer()
+    fun stop() {
+        isStarted = false
     }
-
 }
 
