@@ -1,7 +1,6 @@
 package com.example.test908.presentation.main
 
 import android.os.Bundle
-import android.os.PersistableBundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.example.test908.databinding.ActivityMainBinding
