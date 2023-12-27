@@ -20,7 +20,10 @@ class ReviewRepositoryImpl @Inject constructor(
         localSource.refreshReview(mapped)
         mapped.map { it.mapToDomain() }
     }
-    override suspend fun fetchReviews(): Flow<List<Review?>> {
-           return localSource.getReviews().map { it.map { it.mapToDomain() } }
+    override suspend fun fetchReviews(): Flow<List<Review>> = localSource.getReviews().map { localReviews ->
+               localReviews.map { it.mapToDomain() }
         }
+
+    override suspend fun fetchReviewsById(id: String) = localSource.getDataById(id.toInt()).mapToDomain()
+
 }

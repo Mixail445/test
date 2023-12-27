@@ -39,4 +39,5 @@ object DateUtils {
                 secondDate.format(CALENDAR_UI_FORMAT).orEmpty()
         }
     }
+    fun getCurrentDate() = LocalDateTime.now().format("yyyy-MM-dd")
 }

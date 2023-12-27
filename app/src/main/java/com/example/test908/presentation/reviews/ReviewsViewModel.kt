@@ -8,14 +8,15 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.example.test908.domain.repository.review.ReviewRepository
 import com.example.test908.domain.repository.review.model.Review
+import com.example.test908.presentation.common.Screens
 import com.example.test908.presentation.reviews.ReviewsView.Event
 import com.example.test908.presentation.reviews.ReviewsView.Model
 import com.example.test908.presentation.reviews.ReviewsView.UiLabel
 import com.example.test908.utils.DateUtils
 import com.example.test908.utils.ErrorHandel
+import com.example.test908.utils.FavoriteLocalSourceInt
 import com.example.test908.utils.UtilTimer
 import com.example.test908.utils.onError
-import com.example.test908.utils.onSuccess
 import com.example.test908.utils.toEpochMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDateTime
@@ -37,25 +38,32 @@ class ReviewsViewModel @Inject constructor(
     private val errorHandler: ErrorHandel,
     private val utilTimer: UtilTimer,
     private val reviewUiMapper: ReviewUiMapper,
-    private val state: SavedStateHandle
+    private val state: SavedStateHandle,
+    private val favoriteLocalSourceInt: FavoriteLocalSourceInt
 ) : ViewModel() {
     private var searchQuery: String = ""
     private var searchDateStart: LocalDateTime? = null
     private var searchDateEnd: LocalDateTime? = null
+    private var _reviews: List<Review> = emptyList()
+
+    private val _favorites: MutableSet<String> = mutableSetOf()
+    private val favorite = FavoriteData(_favorites)
+    lateinit var id: String
 
     private val _uiState = MutableStateFlow(
         state.get<Model>(STATE_KEY_REVIEW) ?: produceInitialState()
     )
+
+
     private fun produceInitialState() = Model(
         query = searchQuery,
         date = "",
         timer = state[TIMER_KEY]
     )
+
     val uiState: StateFlow<Model> = _uiState.asStateFlow()
     private val _uiLabels = MutableLiveData<UiLabel>()
     val uiLabels: LiveData<UiLabel> get() = _uiLabels
-
-    private var _reviews: List<Review> = emptyList()
 
     init {
         showTimer()
@@ -63,12 +71,13 @@ class ReviewsViewModel @Inject constructor(
             initData()
         }
         (state.get<String>(TIMER_KEY))?.let { time ->
-            _uiState.update { it.copy(timer = reviewUiMapper.mapTimer(time)) }
+            _uiState.update { it.copy(timer = reviewUiMapper.convertTimer(time.toLong())) }
         }
+
+
     }
     private suspend fun initData() {
         getDataFromDb()
-        requestReviews()
     }
 
     private fun processError(throwable: Throwable) {
@@ -79,47 +88,48 @@ class ReviewsViewModel @Inject constructor(
         if (uiState.value.isLoading) return
         _uiState.update { it.copy(isLoading = true) }
 
-        repository.getReviewsRemote()
-            .onSuccess { list ->
-                _reviews = list as List<Review>
+        repository.getReviewsRemote().onError(::processError)
 
-                val filteredReviews = filterByDateAndQuery(
-                    items = _reviews,
-                    dateStart = searchDateStart,
-                    dateEnd = searchDateEnd,
-                    query = searchQuery
-                ).map { it.mapToUi() }
-
-                _uiState.update { model ->
-                    model.copy(reviewItems = filteredReviews)
-                }
-            }
-            .onError(::processError)
         _uiState.update { it.copy(isLoading = false) }
     }
 
     private suspend fun getDataFromDb() {
-        repository.fetchReviews().map { _reviews = it as List<Review> }.stateIn(viewModelScope)
-        val filteredReviews = filterByDateAndQuery(
-            items = _reviews,
-            dateStart = searchDateStart,
-            dateEnd = searchDateEnd,
-            query = searchQuery
-        ).map { it.mapToUi() }
+            repository.fetchReviews().map { listReview ->
+                _reviews = listReview
+
+            }.stateIn(viewModelScope)
+
+        favoriteLocalSourceInt.getId()?.item?.let { _favorites.addAll(it) }
 
         _uiState.update { model ->
-            model.copy(reviewItems = filteredReviews)
+            model.copy(reviewItems = getFinalList())
         }
+    }
+    fun addFavorite(id: String) {
+        if (_favorites.contains(id)) {
+            _favorites.remove(id)
+        } else {
+            _favorites.add(id)
+        }
+
+        favoriteLocalSourceInt.setId(favorite)
+
+            _uiState.update {
+                it.copy(reviewItems = getFinalList())
+            }
 
     }
 
     fun onEvent(event: Event): Unit = when (event) {
         Event.OnCalendarClick -> handleOnCalendarClick()
         is Event.OnQueryReviewsTextUpdated -> onQueryReviewsTextUpdated(event.value)
-        Event.OnReviewClick -> Unit // TODO()
+        is Event.OnReviewClick -> toDetailReview(event.id)
         Event.RefreshReviews -> refreshReviews()
         Event.OnCalendarClearDateClick -> onCalendarClearDateClick()
         is Event.OnUserSelectPeriod -> handleUserSelectPeriod(event.firstDate, event.secondDate)
+    }
+    private fun toDetailReview(id: String) {
+        _uiLabels.value = UiLabel.ShowDetailScreen(Screens.DetailReview, id = id)
     }
 
     private fun handleOnCalendarClick() {
@@ -129,39 +139,27 @@ class ReviewsViewModel @Inject constructor(
     private fun onQueryReviewsTextUpdated(value: String) {
         searchQuery = value
         _uiState.update { it.copy(query = value) }
-        val filteredReviews = filterByDateAndQuery(
-            items = _reviews,
-            dateStart = searchDateStart,
-            dateEnd = searchDateEnd,
-            query = searchQuery
-        ).map { it.mapToUi() }
-        _uiState.update { it.copy(reviewItems = filteredReviews) }
+        _uiState.update { it.copy(reviewItems = getFinalList()) }
     }
 
     private fun handleUserSelectPeriod(dateStart: Long, dateEnd: Long) {
         searchDateStart = DateUtils.parseLocalDateTime(dateStart)
         searchDateEnd = DateUtils.parseLocalDateTime(dateEnd)
 
-        val filteredReviews = filterByDateAndQuery(
-            items = _reviews,
-            dateStart = searchDateStart,
-            dateEnd = searchDateEnd,
-            query = searchQuery
-        ).map { it.mapToUi() }
-
         _uiState.update {
             it.copy(
                 isClearDateIconVisible = true,
-                reviewItems = filteredReviews,
+                reviewItems = getFinalList(),
                 date = DateUtils.getCalendarUiDate(searchDateStart, searchDateEnd)
             )
         }
     }
+
     private fun filterByDateAndQuery(
-        items: List<Review>,
-        dateStart: LocalDateTime?,
-        dateEnd: LocalDateTime?,
-        query: String
+        items: List<Review> = _reviews,
+        dateStart: LocalDateTime? = searchDateStart,
+        dateEnd: LocalDateTime? = searchDateEnd,
+        query: String = searchQuery
     ) = items.filter {
         (
                 if (dateStart == null || dateEnd == null) {
@@ -179,6 +177,7 @@ class ReviewsViewModel @Inject constructor(
                 ) && it?.title?.contains(query, true) == true
     }
 
+
     private fun refreshReviews() {
         viewModelScope.launch {
             requestReviews()
@@ -188,36 +187,34 @@ class ReviewsViewModel @Inject constructor(
     private fun onCalendarClearDateClick() {
         searchDateStart = null
         searchDateEnd = null
-        val filteredReviews = filterByDateAndQuery(
-            items = _reviews,
-            dateStart = searchDateStart,
-            dateEnd = searchDateEnd,
-            query = searchQuery
-        ).map { it.mapToUi() }
 
         _uiState.update {
             it.copy(
                 date = "",
                 isClearDateIconVisible = false,
-                reviewItems = filteredReviews
+                reviewItems = getFinalList()
             )
         }
     }
-    private fun getTimer(): LiveData<String> {
-        return state.getLiveData(TIMER_KEY)
-    }
+
     private fun saveTimer(newName: String) {
         state[TIMER_KEY] = newName
     }
+
     private fun showTimer() {
         viewModelScope.launch {
-                utilTimer.start(state.get<String>(TIMER_KEY)?.toLong() ?: 0)
-                utilTimer.time.asFlow().collect { time ->
-                    saveTimer(time.toString())
-                    _uiState.update {
-                        it.copy(timer = reviewUiMapper.mapTimer(getTimer().value))
-                    }
+            utilTimer.start(state.get<String>(TIMER_KEY)?.toLong() ?: 0)
+            utilTimer.time.asFlow().collect { time ->
+                saveTimer(time.toString())
+                _uiState.update {
+                    it.copy(timer = reviewUiMapper.convertTimer(time))
                 }
             }
         }
     }
+    private fun getFinalList() = filterByDateAndQuery().map { item ->
+            val isInFavorite = _favorites.any { it == item.localId }
+            val icon = reviewUiMapper.getDrawable(isInFavorite)
+            item.mapToUi(icon)
+    }
+}

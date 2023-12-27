@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/reviewTab"
+        android:enabled="true"
+        android:icon="@drawable/baseline_movie_creation_24"
+        android:title="@string/review"/>
+    <item
+        android:id="@+id/bookTab"
+        android:icon="@drawable/baseline_people_24"
+        android:enabled="true"
+        android:title="@string/books"/>
+</menu>

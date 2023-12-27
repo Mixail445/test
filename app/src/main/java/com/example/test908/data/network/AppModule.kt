@@ -1,20 +1,31 @@
 package com.example.test908.data.network
 
 import android.content.Context
-import com.example.test908.Constant
+import com.example.test908.Constant.BASE_URL
+import com.example.test908.R
+import com.example.test908.data.repository.BooksRepositoryImpl
 import com.example.test908.data.repository.ReviewRepositoryImpl
+import com.example.test908.data.repository.books.remote.BooksApi
+import com.example.test908.data.repository.books.remote.BooksRemoteSourceImpl
 import com.example.test908.data.repository.review.local.ReviewDao
 import com.example.test908.data.repository.review.local.ReviewLocalSourceImpl
 import com.example.test908.data.repository.review.remote.DispatchersProvider
 import com.example.test908.data.repository.review.remote.DispatchersProviderImpl
 import com.example.test908.data.repository.review.remote.ReviewApi
 import com.example.test908.data.repository.review.remote.ReviewRemoteSourceImpl
+import com.example.test908.domain.repository.books.BooksRemoteSource
+import com.example.test908.domain.repository.books.BooksRepository
 import com.example.test908.domain.repository.review.ReviewLocalSource
 import com.example.test908.domain.repository.review.ReviewRemoteSource
 import com.example.test908.domain.repository.review.ReviewRepository
-import com.example.test908.presentation.main.Router
-import com.example.test908.presentation.main.RouterImpl
+import com.example.test908.presentation.common.Router
+import com.example.test908.presentation.common.RouterImpl
+import com.example.test908.presentation.reviews.FavoriteData
 import com.example.test908.utils.ErrorHandel
+import com.example.test908.utils.FavoriteLocalSourceImpl
+import com.example.test908.utils.FavoriteLocalSourceInt
+import com.example.test908.utils.SharedPreferenceUtil
+import com.example.test908.utils.SharedPreferencesOne
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -22,6 +33,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -51,7 +63,26 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRouter(): Router = RouterImpl()
+    @Named("Host")
+    fun provideRouter(): Router = RouterImpl(R.id.NavHostFragment)
+
+    @Singleton
+    @Provides
+    @Named("Child")
+    fun provideRouterChild(): Router = RouterImpl(R.id.childNavHostFragmentOne)
+
+    @Singleton
+    @Provides
+    fun provideSharePref(@ApplicationContext context: Context): SharedPreferencesOne<FavoriteData> = SharedPreferenceUtil(
+        context,
+        FavoriteData::class.java
+    )
+
+    @Singleton
+    @Provides
+    fun provideShare(sharedPreferencesOne: SharedPreferencesOne<FavoriteData>): FavoriteLocalSourceInt = FavoriteLocalSourceImpl(
+        sharedPreferencesOne
+    )
 
     @Singleton
     @Provides
@@ -68,6 +99,13 @@ object AppModule {
     fun provideErrorHandler(@ApplicationContext context: Context): ErrorHandel = ErrorHandel(
         context
     )
+
+    @Singleton
+    @Provides
+    fun provideMoshi(): Moshi {
+        return Moshi.Builder().build()
+    }
+
     private val moshi =
         Moshi.Builder()
             .addLast(KotlinJsonAdapterFactory())
@@ -79,7 +117,7 @@ object AppModule {
         okHttpClient: OkHttpClient
     ): Retrofit = Retrofit.Builder()
         .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .baseUrl(Constant.BASE_URL)
+        .baseUrl(BASE_URL)
         .client(okHttpClient)
         .build()
 
@@ -96,4 +134,19 @@ object AppModule {
             httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         }
     }
+
+    @Singleton
+    @Provides
+    fun provideBooksRepository(booksRepositoryImpl: BooksRepositoryImpl): BooksRepository = booksRepositoryImpl
+
+    @Singleton
+    @Provides
+    fun provideBooksRemoteSource(
+        api: BooksApi,
+        dispatchersProvider: DispatchersProvider
+    ): BooksRemoteSource = BooksRemoteSourceImpl(api, dispatchersProvider)
+
+    @Singleton
+    @Provides
+    fun provideBooksApi(retrofit: Retrofit): BooksApi = retrofit.create(BooksApi::class.java)
 }

@@ -4,6 +4,6 @@ import com.example.test908.data.repository.review.model.ReviewsResponseDto
 import retrofit2.http.GET
 
 interface ReviewApi {
-    @GET("arts.json?")
+    @GET("topstories/v2/arts.json?")
     suspend fun getReviews(): ReviewsResponseDto
 }

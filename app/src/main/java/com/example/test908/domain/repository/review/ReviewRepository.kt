@@ -7,5 +7,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ReviewRepository {
     suspend fun getReviewsRemote(): AppResult<List<Review?>, Throwable>
-    suspend fun fetchReviews(): Flow<List<Review?>>
+    suspend fun fetchReviews(): Flow<List<Review>>
+    suspend fun fetchReviewsById(id: String): Review
 }
