@@ -11,8 +11,8 @@ data class Review(
     val multimedia: String,
     val publishedDate: LocalDateTime?,
     val title: String,
-    val shortUrl: String
-
+    val shortUrl: String,
+    val localId: String
 ) {
     fun mapToUi() = ReviewUi(
     abstract = abstract,
@@ -20,7 +20,7 @@ data class Review(
     date = publishedDate?.format(DateUtils.CALENDAR_UI_ITEM_FORMAT).orEmpty(),
     title = title,
     pictureSrc = multimedia,
-    itemId = shortUrl
-)
+    itemId = localId
+    )
 }
 

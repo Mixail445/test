@@ -21,6 +21,15 @@ class ReviewRepositoryImpl @Inject constructor(
         mapped.map { it.mapToDomain() }
     }
     override suspend fun fetchReviews(): Flow<List<Review?>> {
-           return localSource.getReviews().map { it.map { it.mapToDomain() } }
+           return localSource.getReviews().map { localReviews ->
+               localReviews.map {
+               it.mapToDomain()
+           }
+           }
         }
+
+    override suspend fun fetchReviewsById(id: String): Flow<Review> {
+        return localSource.getDataById(id.toInt()).map { it.mapToDomain() }
+    }
+
 }

@@ -24,4 +24,7 @@ interface ReviewDao {
         deleteAll()
         insertReviewList(review)
     }
+
+    @Query("SELECT*FROM ${"review"} WHERE id=:id")
+    fun getReviewById(id: Int): Flow<ReviewEntity>
 }

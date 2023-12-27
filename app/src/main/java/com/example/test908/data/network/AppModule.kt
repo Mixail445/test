@@ -2,6 +2,7 @@ package com.example.test908.data.network
 
 import android.content.Context
 import com.example.test908.Constant
+import com.example.test908.R
 import com.example.test908.data.repository.ReviewRepositoryImpl
 import com.example.test908.data.repository.review.local.ReviewDao
 import com.example.test908.data.repository.review.local.ReviewLocalSourceImpl
@@ -12,9 +13,12 @@ import com.example.test908.data.repository.review.remote.ReviewRemoteSourceImpl
 import com.example.test908.domain.repository.review.ReviewLocalSource
 import com.example.test908.domain.repository.review.ReviewRemoteSource
 import com.example.test908.domain.repository.review.ReviewRepository
-import com.example.test908.presentation.main.Router
-import com.example.test908.presentation.main.RouterImpl
+import com.example.test908.presentation.common.Router
+import com.example.test908.presentation.common.RouterImpl
+import com.example.test908.presentation.reviews.FavoriteData
 import com.example.test908.utils.ErrorHandel
+import com.example.test908.utils.SharedPreferenceUtil
+import com.example.test908.utils.SharedPreferencesOne
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -22,6 +26,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Named
 import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -51,7 +56,21 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideRouter(): Router = RouterImpl()
+    @Named("Host")
+    fun provideRouter(): Router = RouterImpl(R.id.NavHostFragment)
+
+    @Singleton
+    @Provides
+    @Named("Child")
+    fun provideRouterChild(): Router = RouterImpl(R.id.childNavHostFragmentOne)
+
+    @Singleton
+    @Provides
+    @Named("favorite")
+    fun provideSharePref(@ApplicationContext context: Context): SharedPreferencesOne<FavoriteData> = SharedPreferenceUtil(
+        context,
+        FavoriteData::class.java
+    )
 
     @Singleton
     @Provides
@@ -68,6 +87,13 @@ object AppModule {
     fun provideErrorHandler(@ApplicationContext context: Context): ErrorHandel = ErrorHandel(
         context
     )
+
+    @Singleton
+    @Provides
+    fun provideMoshi(): Moshi {
+        return Moshi.Builder().build()
+    }
+
     private val moshi =
         Moshi.Builder()
             .addLast(KotlinJsonAdapterFactory())

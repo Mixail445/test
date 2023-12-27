@@ -18,4 +18,5 @@
     <string name="loading_data_please_wait">Loading data, please wait</string>
     <string name="sorry_connection_error">Sorry connection error</string>
     <string name="sorry_something_went_wrong">Sorry something went wrong</string>
+    <string name="todo">TODO</string>
 </resources>

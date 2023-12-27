@@ -1,29 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/NavHostFragment"
-    app:startDestination="@id/fragRewiewes2">
+    tools:ignore="UnusedNavigation"
+    app:startDestination="@id/homeFragment">
     <fragment
-        android:id="@+id/fragRewiewes2"
-        android:name="com.example.test908.presentation.reviews.ReviewsFragment"
-        android:label="FragReviews">
-        <action
-            android:id="@+id/action_fragRewiewes2_to_fragCritic"
-            app:destination="@id/fragCritic"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popUpTo="@+id/fragCritic"
-            app:popUpToInclusive="true" />
+        android:id="@+id/homeFragment"
+        android:name="com.example.test908.presentation.home.HomeFragment"
+        tools:layout="@layout/home_fragment"
+        android:label="HomeFragment" >
     </fragment>
     <fragment
-        android:id="@+id/fragCritic"
-        android:name="com.example.test908.presentation.critics.CriticFragment"
-        android:label="FragCritic">
-        <action
-            android:id="@+id/action_fragCritic_to_fragRewiewes2"
-            app:destination="@id/fragRewiewes2"
-            app:launchSingleTop="false"
-            app:popUpTo="@+id/fragRewiewes2"
-            app:popUpToInclusive="true" />
+        android:id="@+id/detailReviewFragment2"
+        android:name="com.example.test908.presentation.detalReview.DetailReviewFragment"
+        android:label="DetailReviewFragment"
+        tools:layout="@layout/fragment_detal_reviews">
     </fragment>
 </navigation>
