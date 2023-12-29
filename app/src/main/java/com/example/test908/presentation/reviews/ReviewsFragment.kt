@@ -5,11 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.example.test908.databinding.FragmentReviewsBinding
 import com.example.test908.presentation.common.RecyclerViewItemDecoration
+import com.example.test908.presentation.common.Router
 import com.example.test908.presentation.common.launchAndRepeatWithViewLifecycle
 import com.example.test908.presentation.common.showDatePickers
 import com.example.test908.presentation.common.showDialogError
@@ -17,32 +20,35 @@ import com.example.test908.presentation.common.subscribe
 import com.example.test908.presentation.reviews.ReviewsView.Event
 import com.example.test908.presentation.reviews.ReviewsView.UiLabel
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ReviewsFragment : Fragment() {
     private var _binding: FragmentReviewsBinding? = null
+
+    @Inject
+    lateinit var router: Router
     private val binding get() = _binding!!
     private val viewModel: ReviewsViewModel by viewModels()
     private val adapter = ReviewsScreenAdapter(
         onItemClicked = {
-            viewModel.onEvent(Event.OnReviewClick)
-        }
+       viewModel.onEvent(Event.OnReviewClick)
+            setFragmentResult("requestKey", bundleOf("bundleKey" to it))
+    }
     )
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentReviewsBinding.inflate(inflater, container, false)
+
         return binding.root
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViews()
         initViewModel()
     }
-
     private fun initViews() {
         binding.rvContent.apply {
             adapter = this@ReviewsFragment.adapter
@@ -73,13 +79,13 @@ class ReviewsFragment : Fragment() {
             launchAndRepeatWithViewLifecycle { viewModel.uiState.collect(::handleState) }
         }
     }
-
     private fun handleUiLabel(uiLabel: UiLabel): Unit = when (uiLabel) {
         is UiLabel.ShowDatePicker -> showFilterDatePicker(uiLabel.date)
         is UiLabel.ShowError -> showDialogError(
             title = "Error",
             message = uiLabel.message
         )
+        is UiLabel.ShowDetailScreen -> router.navigateTo(uiLabel.screens)
     }
 
     private fun showFilterDatePicker(date: Long?) {

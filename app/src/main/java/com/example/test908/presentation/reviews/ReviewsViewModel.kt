@@ -8,6 +8,7 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.viewModelScope
 import com.example.test908.domain.repository.review.ReviewRepository
 import com.example.test908.domain.repository.review.model.Review
+import com.example.test908.presentation.common.Screens
 import com.example.test908.presentation.reviews.ReviewsView.Event
 import com.example.test908.presentation.reviews.ReviewsView.Model
 import com.example.test908.presentation.reviews.ReviewsView.UiLabel
@@ -116,16 +117,18 @@ class ReviewsViewModel @Inject constructor(
     fun onEvent(event: Event): Unit = when (event) {
         Event.OnCalendarClick -> handleOnCalendarClick()
         is Event.OnQueryReviewsTextUpdated -> onQueryReviewsTextUpdated(event.value)
-        Event.OnReviewClick -> Unit // TODO()
+        is Event.OnReviewClick -> toDetailReview()
         Event.RefreshReviews -> refreshReviews()
         Event.OnCalendarClearDateClick -> onCalendarClearDateClick()
         is Event.OnUserSelectPeriod -> handleUserSelectPeriod(event.firstDate, event.secondDate)
+    }
+    private fun toDetailReview() {
+        _uiLabels.value = UiLabel.ShowDetailScreen(Screens.DetailReview)
     }
 
     private fun handleOnCalendarClick() {
         _uiLabels.value = UiLabel.ShowDatePicker(searchDateStart?.toEpochMillis())
     }
-
     private fun onQueryReviewsTextUpdated(value: String) {
         searchQuery = value
         _uiState.update { it.copy(query = value) }
@@ -178,6 +181,7 @@ class ReviewsViewModel @Inject constructor(
                 }
                 ) && it?.title?.contains(query, true) == true
     }
+
 
     private fun refreshReviews() {
         viewModelScope.launch {

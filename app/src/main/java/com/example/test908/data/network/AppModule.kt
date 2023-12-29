@@ -12,8 +12,8 @@ import com.example.test908.data.repository.review.remote.ReviewRemoteSourceImpl
 import com.example.test908.domain.repository.review.ReviewLocalSource
 import com.example.test908.domain.repository.review.ReviewRemoteSource
 import com.example.test908.domain.repository.review.ReviewRepository
-import com.example.test908.presentation.main.Router
-import com.example.test908.presentation.main.RouterImpl
+import com.example.test908.presentation.common.Router
+import com.example.test908.presentation.common.RouterImpl
 import com.example.test908.utils.ErrorHandel
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

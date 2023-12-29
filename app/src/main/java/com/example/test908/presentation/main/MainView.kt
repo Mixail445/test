@@ -1,6 +1,7 @@
 package com.example.test908.presentation.main
 
 import android.os.Parcelable
+import com.example.test908.presentation.common.Screens
 import kotlinx.parcelize.Parcelize
 
 class MainView {

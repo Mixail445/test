@@ -1,6 +1,7 @@
 package com.example.test908.presentation.reviews
 
 import android.os.Parcelable
+import com.example.test908.presentation.common.Screens
 import kotlinx.android.parcel.Parcelize
 
 interface ReviewsView {
@@ -26,5 +27,6 @@ interface ReviewsView {
     sealed interface UiLabel {
         data class ShowDatePicker(val date: Long?) : UiLabel
         data class ShowError(val title: String?, val message: String) : UiLabel
+        data class ShowDetailScreen(val screens: Screens) : UiLabel
     }
 }
