@@ -22,11 +22,13 @@ interface ReviewsView {
         data object OnCalendarClick : Event
         data object OnReviewClick : Event
         data class OnUserSelectPeriod(val firstDate: Long, val secondDate: Long) : Event
+        data object OnCriticClick : Event
     }
 
     sealed interface UiLabel {
         data class ShowDatePicker(val date: Long?) : UiLabel
         data class ShowError(val title: String?, val message: String) : UiLabel
         data class ShowDetailScreen(val screens: Screens) : UiLabel
+        data class ShowCriticScreen(val screens: Screens) : UiLabel
     }
 }

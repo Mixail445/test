@@ -5,5 +5,6 @@ sealed class Screens {
       data object Reviews : Screens()
       data object Critics : Screens()
       data object DetailReview : Screens()
+      data object ToToolbarNav : Screens()
 }
 

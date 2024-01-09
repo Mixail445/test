@@ -1,6 +1,7 @@
 package com.example.test908.presentation.common
 
 
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -15,6 +16,12 @@ class RouterImpl @Inject constructor() : Router {
             supportFragmentManager.findFragmentById(R.id.NavHostFragment) as NavHostFragment
         navController = navHostFragment.navController
     }
+
+    override fun initForFragment(fragment: Fragment) {
+        val navHostFragment = NavHostFragment.findNavController(fragment)
+        navController = navHostFragment
+    }
+
     override fun clear() {
         navController = null
     }
@@ -23,16 +30,22 @@ class RouterImpl @Inject constructor() : Router {
             Screens.Critics -> moveToFragmentCritic()
             Screens.Reviews -> moveToFragmentReview()
             Screens.DetailReview -> moveToDetailReview()
+            Screens.ToToolbarNav -> toToolbarAction()
         }
     }
+
+    override fun toToolbarAction() {
+   navController?.navigate(R.id.toolbar_nav)
+    }
+
     private fun moveToFragmentReview() {
-        navController?.navigateUp()
+        navController?.navigate(R.id.reviewsFragment)
     }
     private fun moveToFragmentCritic() {
-        navController?.navigateBackStack(R.id.fragCritic)
+        navController?.navigate(R.id.criticFragment)
     }
     private fun moveToDetailReview() {
-        navController?.navigateBackStack(R.id.detailReviewFragment)
+        navController?.navigate(R.id.detailReviewFragment)
     }
     override fun back() {
         navController?.popBackStack()

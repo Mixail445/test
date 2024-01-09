@@ -25,10 +25,6 @@ class DetailReviewViewModel @AssistedInject constructor(
     @Assisted state: SavedStateHandle,
     private val repository: ReviewRepository
 ) : ViewModel() {
-
-
-
-
     private var _reviews: List<Review> = emptyList()
     private fun produceInitialState() =
         DetailReviewView.Model(
@@ -39,11 +35,13 @@ class DetailReviewViewModel @AssistedInject constructor(
     private val _uiState =
         MutableStateFlow(state.get<DetailReviewView.Model>(STATE_DETAIL) ?: produceInitialState())
     val uiState: StateFlow<DetailReviewView.Model> = _uiState.asStateFlow()
+
     init {
         viewModelScope.launch {
             index?.toInt()?.let { getDataFromDb(it) }
         }
     }
+
     private suspend fun getDataFromDb(index: Int) {
         repository.fetchReviews().map { _reviews = it as List<Review> }.stateIn(viewModelScope)
         _uiState.update { model ->

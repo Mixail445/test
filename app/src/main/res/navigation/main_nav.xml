@@ -2,39 +2,10 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/NavHostFragment"
-    app:startDestination="@id/fragRewiewes2">
-    <fragment
-        android:id="@+id/fragRewiewes2"
-        android:name="com.example.test908.presentation.reviews.ReviewsFragment"
-        android:label="FragReviews">
-        <action
-            android:id="@+id/action_fragRewiewes2_to_fragCritic"
-            app:destination="@id/fragCritic"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popUpTo="@+id/fragCritic"
-            app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_fragRewiewes2_to_detailReviewFragment"
-            app:destination="@id/detailReviewFragment" />
-    </fragment>
-    <fragment
-        android:id="@+id/fragCritic"
-        android:name="com.example.test908.presentation.critics.CriticFragment"
-        android:label="FragCritic">
-        <action
-            android:id="@+id/action_fragCritic_to_fragRewiewes2"
-            app:destination="@id/fragRewiewes2"
-            app:launchSingleTop="false"
-            app:popUpTo="@+id/fragRewiewes2"
-            app:popUpToInclusive="true" />
-    </fragment>
+    app:startDestination="@id/toolbar_nav">
+    <include app:graph ="@navigation/toolbar_nav"/>
     <fragment
         android:id="@+id/detailReviewFragment"
         android:name="com.example.test908.presentation.detalReview.DetailReviewFragment"
-        android:label="DetailReviewFragment" >
-        <action
-            android:id="@+id/action_detailReviewFragment_to_fragRewiewes2"
-            app:destination="@id/fragRewiewes2" />
-    </fragment>
+        android:label="DetailReviewFragment" />
 </navigation>

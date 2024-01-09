@@ -71,6 +71,9 @@ class ReviewsFragment : Fragment() {
         binding.swipeContainer.setOnRefreshListener {
             viewModel.onEvent(Event.RefreshReviews)
         }
+        binding.toolbar.critics.setOnClickListener {
+            viewModel.onEvent(Event.OnCriticClick)
+        }
     }
 
     private fun initViewModel() {
@@ -86,8 +89,8 @@ class ReviewsFragment : Fragment() {
             message = uiLabel.message
         )
         is UiLabel.ShowDetailScreen -> router.navigateTo(uiLabel.screens)
+        is UiLabel.ShowCriticScreen -> router.navigateTo(uiLabel.screens)
     }
-
     private fun showFilterDatePicker(date: Long?) {
         showDatePickers(
             date = date,
@@ -109,6 +112,14 @@ class ReviewsFragment : Fragment() {
         binding.ivIcClose.isVisible = model.isClearDateIconVisible
         binding.swipeContainer.isRefreshing = model.isLoading
         binding.tvTimer.text = model.timer
+    }
+    override fun onStart() {
+        super.onStart()
+        router.initForFragment(this)
+    }
+    override fun onStop() {
+        super.onStop()
+        router.clear()
     }
 
     override fun onDestroy() {

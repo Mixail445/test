@@ -11,6 +11,8 @@ import androidx.lifecycle.SavedStateHandle
 import com.bumptech.glide.Glide
 import com.example.test908.R
 import com.example.test908.databinding.FragmentDetalReviewsBinding
+import com.example.test908.presentation.common.Router
+import com.example.test908.presentation.common.Screens
 import com.example.test908.presentation.common.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -20,6 +22,9 @@ class DetailReviewFragment : Fragment() {
     private var _binding: FragmentDetalReviewsBinding? = null
     private val binding get() = _binding!!
     private var sendIndexToViewModel: String? = null
+
+    @Inject
+    lateinit var router: Router
 
     @Inject
     lateinit var factory: DetailReviewViewModel.Factory
@@ -37,16 +42,19 @@ class DetailReviewFragment : Fragment() {
         _binding = FragmentDetalReviewsBinding.inflate(inflater, container, false)
         return binding.root
     }
-
+    private fun initViewModel() {
+            launchAndRepeatWithViewLifecycle { viewModel.uiState.collect(::handleState) }
+    }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViewModel()
         setFragmentResultListener("requestKey") { _, bundle ->
             sendIndexToViewModel = bundle.getString("bundleKey")
         }
+        binding.tolba.reviewes.setOnClickListener {
+            router.navigateTo(Screens.ToToolbarNav)
+        }
     }
-    private fun initViewModel() {
-           launchAndRepeatWithViewLifecycle { viewModel.uiState.collect(::handleState) }
-    }
+
     private fun handleState(model: DetailReviewView.Model): Unit = model.run {
         Glide.with(this@DetailReviewFragment).load(model.photo)
             .error(R.drawable.img)
@@ -57,5 +65,13 @@ class DetailReviewFragment : Fragment() {
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+    override fun onStart() {
+        super.onStart()
+        router.initForFragment(this)
+    }
+    override fun onStop() {
+        super.onStop()
+        router.clear()
     }
 }
