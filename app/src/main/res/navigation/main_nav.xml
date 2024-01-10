@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/NavHostFragment"
-    app:startDestination="@id/toolbar_nav">
-    <include app:graph ="@navigation/toolbar_nav"/>
+    tools:ignore="UnusedNavigation"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.example.test908.presentation.HomeFragment"
+        tools:layout="@layout/home_fragment"
+        android:label="HomeFragment" />
+
     <fragment
         android:id="@+id/detailReviewFragment"
         android:name="com.example.test908.presentation.detalReview.DetailReviewFragment"
-        android:label="DetailReviewFragment" />
+        android:label="DetailReviewFragment"
+        tools:layout="@layout/fragment_detal_reviews" />
+
 </navigation>

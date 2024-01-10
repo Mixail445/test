@@ -9,7 +9,6 @@ interface Router {
     fun initForFragment(fragment: Fragment)
     fun clear()
     fun navigateTo(screen: Screens)
-    fun toToolbarAction()
     fun back()
 }
 

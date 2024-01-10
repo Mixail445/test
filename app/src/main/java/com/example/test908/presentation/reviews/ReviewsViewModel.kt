@@ -118,16 +118,12 @@ class ReviewsViewModel @Inject constructor(
         Event.OnCalendarClick -> handleOnCalendarClick()
         is Event.OnQueryReviewsTextUpdated -> onQueryReviewsTextUpdated(event.value)
         is Event.OnReviewClick -> toDetailReview()
-        is Event.OnCriticClick -> toCritic()
         Event.RefreshReviews -> refreshReviews()
         Event.OnCalendarClearDateClick -> onCalendarClearDateClick()
         is Event.OnUserSelectPeriod -> handleUserSelectPeriod(event.firstDate, event.secondDate)
     }
     private fun toDetailReview() {
         _uiLabels.value = UiLabel.ShowDetailScreen(Screens.DetailReview)
-    }
-    private fun toCritic() {
-        _uiLabels.value = UiLabel.ShowDetailScreen(Screens.Critics)
     }
 
     private fun handleOnCalendarClick() {

@@ -11,10 +11,6 @@ import javax.inject.Inject
 class CriticViewModel @Inject constructor() : ViewModel() {
     private val _uiLabels = MutableLiveData<CriticView.UiLabel>()
     val uiLabels: LiveData<CriticView.UiLabel> get() = _uiLabels
-    fun onEvent(event: CriticView.Event): Unit = when (event) {
-        CriticView.Event.OnClickReview -> toReview()
-    }
-    private fun toReview() {
-        _uiLabels.value = CriticView.UiLabel.ShowReview(Screens.ToToolbarNav)
-    }
+
+
 }

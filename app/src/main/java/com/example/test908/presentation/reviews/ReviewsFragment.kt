@@ -1,14 +1,13 @@
 package com.example.test908.presentation.reviews
 
+import android.R.attr.key
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
-import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import com.example.test908.databinding.FragmentReviewsBinding
 import com.example.test908.presentation.common.RecyclerViewItemDecoration
@@ -22,6 +21,7 @@ import com.example.test908.presentation.reviews.ReviewsView.UiLabel
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class ReviewsFragment : Fragment() {
     private var _binding: FragmentReviewsBinding? = null
@@ -33,7 +33,9 @@ class ReviewsFragment : Fragment() {
     private val adapter = ReviewsScreenAdapter(
         onItemClicked = {
        viewModel.onEvent(Event.OnReviewClick)
-            setFragmentResult("requestKey", bundleOf("bundleKey" to it))
+
+
+            //arguments = bundle
     }
     )
     override fun onCreateView(
@@ -43,9 +45,14 @@ class ReviewsFragment : Fragment() {
     ): View {
         _binding = FragmentReviewsBinding.inflate(inflater, container, false)
 
+        val bundle = Bundle()
+        bundle.putString("ser","1")
+
         return binding.root
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+
         initViews()
         initViewModel()
     }
@@ -71,9 +78,6 @@ class ReviewsFragment : Fragment() {
         binding.swipeContainer.setOnRefreshListener {
             viewModel.onEvent(Event.RefreshReviews)
         }
-        binding.toolbar.critics.setOnClickListener {
-            viewModel.onEvent(Event.OnCriticClick)
-        }
     }
 
     private fun initViewModel() {
@@ -89,7 +93,6 @@ class ReviewsFragment : Fragment() {
             message = uiLabel.message
         )
         is UiLabel.ShowDetailScreen -> router.navigateTo(uiLabel.screens)
-        is UiLabel.ShowCriticScreen -> router.navigateTo(uiLabel.screens)
     }
     private fun showFilterDatePicker(date: Long?) {
         showDatePickers(
@@ -115,11 +118,12 @@ class ReviewsFragment : Fragment() {
     }
     override fun onStart() {
         super.onStart()
-        router.initForFragment(this)
+     //   router.init(childFragmentManager)
+      //  router.initForFragment(this)
     }
     override fun onStop() {
         super.onStop()
-        router.clear()
+       // router.clear()
     }
 
     override fun onDestroy() {

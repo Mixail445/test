@@ -1,27 +1,31 @@
 package com.example.test908.presentation.detalReview
 
+import android.R.attr.key
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.NavController
+import androidx.navigation.Navigation
 import com.bumptech.glide.Glide
 import com.example.test908.R
 import com.example.test908.databinding.FragmentDetalReviewsBinding
 import com.example.test908.presentation.common.Router
-import com.example.test908.presentation.common.Screens
 import com.example.test908.presentation.common.launchAndRepeatWithViewLifecycle
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class DetailReviewFragment : Fragment() {
     private var _binding: FragmentDetalReviewsBinding? = null
     private val binding get() = _binding!!
     private var sendIndexToViewModel: String? = null
+    private var navControllerrr: NavController? = null
 
     @Inject
     lateinit var router: Router
@@ -46,12 +50,21 @@ class DetailReviewFragment : Fragment() {
             launchAndRepeatWithViewLifecycle { viewModel.uiState.collect(::handleState) }
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        navControllerrr = Navigation.findNavController(view)
         initViewModel()
-        setFragmentResultListener("requestKey") { _, bundle ->
-            sendIndexToViewModel = bundle.getString("bundleKey")
-        }
+
+
+
+val bundle = Bundle()
+            Log.d("123",bundle.getString("ser").toString())
+
+            sendIndexToViewModel =   this.arguments?.getString("ser")
+
+
+
+
         binding.tolba.reviewes.setOnClickListener {
-            router.navigateTo(Screens.ToToolbarNav)
+        navControllerrr!!.navigate(R.id.homeFragment)
         }
     }
 
@@ -66,12 +79,14 @@ class DetailReviewFragment : Fragment() {
         super.onDestroy()
         _binding = null
     }
-    override fun onStart() {
-        super.onStart()
-        router.initForFragment(this)
-    }
+
+//    override fun onStart() {
+//        super.onStart()
+//        router.init(childFragmentManager)
+//    }
     override fun onStop() {
         super.onStop()
-        router.clear()
+   //     router.clear()
+   //     navControllerrr = null
     }
 }
