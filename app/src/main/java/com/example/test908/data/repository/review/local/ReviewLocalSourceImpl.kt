@@ -30,11 +30,7 @@ class ReviewLocalSourceImpl(
         reviewDao.refreshReview(review)
     }
 
-    override suspend fun getDataById(id: Int): Flow<ReviewEntity> = withContext(
-        dispatchersProvider.io
-    ) {
-        reviewDao.getReviewById(id)
-    }
+    override suspend fun getDataById(id: Int): ReviewEntity = reviewDao.getReviewById(id)
 }
 
 

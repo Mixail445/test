@@ -1,6 +1,5 @@
 package com.example.test908.presentation.reviews
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
@@ -15,7 +14,7 @@ import com.example.test908.presentation.reviews.ReviewsView.Model
 import com.example.test908.presentation.reviews.ReviewsView.UiLabel
 import com.example.test908.utils.DateUtils
 import com.example.test908.utils.ErrorHandel
-import com.example.test908.utils.FavoriteLocalSource
+import com.example.test908.utils.FavoriteLocalSourceInt
 import com.example.test908.utils.UtilTimer
 import com.example.test908.utils.onError
 import com.example.test908.utils.onSuccess
@@ -41,15 +40,15 @@ class ReviewsViewModel @Inject constructor(
     private val utilTimer: UtilTimer,
     private val reviewUiMapper: ReviewUiMapper,
     private val state: SavedStateHandle,
-    private val favoriteLocalSource: FavoriteLocalSource
+    private val favoriteLocalSourceInt: FavoriteLocalSourceInt
 ) : ViewModel() {
     private var searchQuery: String = ""
     private var searchDateStart: LocalDateTime? = null
     private var searchDateEnd: LocalDateTime? = null
     private var _reviews: List<Review> = emptyList()
 
-    private val _favorites: MutableSet<String> = mutableSetOf("235", "236")
-
+    private val _favorites: MutableSet<String> = mutableSetOf()
+    private val favorite = FavoriteData(_favorites)
     lateinit var id: String
 
     private val _uiState = MutableStateFlow(
@@ -77,13 +76,8 @@ class ReviewsViewModel @Inject constructor(
         }
 
     }
-    fun shared() {
-        favoriteLocalSource.setId("123")
-      Log.d("123", favoriteLocalSource.getId("123").toString())
-    }
     private suspend fun initData() {
         getDataFromDb()
-        // requestReviews()
     }
 
     private fun processError(throwable: Throwable) {
@@ -97,12 +91,7 @@ class ReviewsViewModel @Inject constructor(
         repository.getReviewsRemote()
             .onSuccess { list ->
                 _reviews = list as List<Review>
-                val filteredReviews = filterByDateAndQuery(
-                    items = _reviews,
-                    dateStart = searchDateStart,
-                    dateEnd = searchDateEnd,
-                    query = searchQuery
-                ).map { it.mapToUi() }
+                val filteredReviews = filterByDateAndQuery().map { it.mapToUi(reviewUiMapper) }
 
                 _uiState.update { model ->
                     model.copy(reviewItems = filteredReviews)
@@ -118,34 +107,36 @@ class ReviewsViewModel @Inject constructor(
 
             }.stateIn(viewModelScope)
 
-        val filteredReviews = filterByDateAndQuery(
-            items = _reviews,
-            dateStart = searchDateStart,
-            dateEnd = searchDateEnd,
-            query = searchQuery
-        ).map { it.mapToUi() }
+        val filteredReviews = filterByDateAndQuery().map {
+            it.mapToUi(reviewUiMapper)
+        }.toMutableList()
 
+        favoriteLocalSourceInt.getId()?.item?.let { _favorites.addAll(it) }
+
+        _favorites.forEach { id ->
+            filteredReviews.forEachIndexed { index, reviewUi ->
+                reviewUi.takeIf { it.itemId == id }?.let {
+                    filteredReviews[index] = it.copy(favorite = reviewUiMapper.getDrawable(true))
+                }
+            }
+        }
 
         _uiState.update { model ->
             model.copy(reviewItems = filteredReviews)
         }
     }
     fun addFavorite(id: String) {
-//        if (_favorites.isEmpty()) {
-//            sharedPreferencesOne.getData("key")?.item?.let { _favorites.addAll(it) }
-//        }
         if (_favorites.contains(id)) {
             _favorites.remove(id)
         } else {
             _favorites.add(id)
         }
-        Log.d("id", id.toString())
-        val list = _reviews.map { it.mapToUi() }.toMutableList()
+        favoriteLocalSourceInt.setId(favorite)
+        val list = _reviews.map { it.mapToUi(reviewUiMapper) }.toMutableList()
         _favorites.forEach { id ->
             list.forEachIndexed { index, reviewUi ->
                 reviewUi.takeIf { it.itemId == id }?.let {
-                    Log.d("index", index.toString())
-                    list[index] = it.copy(favorite = reviewUiMapper.checkFlagForAdapter(true))
+                    list[index] = it.copy(favorite = reviewUiMapper.getDrawable(true))
                 }
             }
         }
@@ -174,12 +165,7 @@ class ReviewsViewModel @Inject constructor(
     private fun onQueryReviewsTextUpdated(value: String) {
         searchQuery = value
         _uiState.update { it.copy(query = value) }
-        val filteredReviews = filterByDateAndQuery(
-            items = _reviews,
-            dateStart = searchDateStart,
-            dateEnd = searchDateEnd,
-            query = searchQuery
-        ).map { it.mapToUi() }
+        val filteredReviews = filterByDateAndQuery().map { it.mapToUi(reviewUiMapper) }
         _uiState.update { it.copy(reviewItems = filteredReviews) }
     }
 
@@ -187,12 +173,7 @@ class ReviewsViewModel @Inject constructor(
         searchDateStart = DateUtils.parseLocalDateTime(dateStart)
         searchDateEnd = DateUtils.parseLocalDateTime(dateEnd)
 
-        val filteredReviews = filterByDateAndQuery(
-            items = _reviews,
-            dateStart = searchDateStart,
-            dateEnd = searchDateEnd,
-            query = searchQuery
-        ).map { it.mapToUi() }
+        val filteredReviews = filterByDateAndQuery().map { it.mapToUi(reviewUiMapper) }
 
         _uiState.update {
             it.copy(
@@ -204,10 +185,10 @@ class ReviewsViewModel @Inject constructor(
     }
 
     private fun filterByDateAndQuery(
-        items: List<Review>,
-        dateStart: LocalDateTime?,
-        dateEnd: LocalDateTime?,
-        query: String
+        items: List<Review> = _reviews,
+        dateStart: LocalDateTime? = searchDateStart,
+        dateEnd: LocalDateTime? = searchDateEnd,
+        query: String = searchQuery
     ) = items.filter {
         (
                 if (dateStart == null || dateEnd == null) {
@@ -235,12 +216,7 @@ class ReviewsViewModel @Inject constructor(
     private fun onCalendarClearDateClick() {
         searchDateStart = null
         searchDateEnd = null
-        val filteredReviews = filterByDateAndQuery(
-            items = _reviews,
-            dateStart = searchDateStart,
-            dateEnd = searchDateEnd,
-            query = searchQuery
-        ).map { it.mapToUi() }
+        val filteredReviews = filterByDateAndQuery().map { it.mapToUi(reviewUiMapper) }
 
         _uiState.update {
             it.copy(

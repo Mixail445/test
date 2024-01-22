@@ -17,6 +17,8 @@ import com.example.test908.presentation.common.Router
 import com.example.test908.presentation.common.RouterImpl
 import com.example.test908.presentation.reviews.FavoriteData
 import com.example.test908.utils.ErrorHandel
+import com.example.test908.utils.FavoriteLocalSource
+import com.example.test908.utils.FavoriteLocalSourceInt
 import com.example.test908.utils.SharedPreferenceUtil
 import com.example.test908.utils.SharedPreferencesOne
 import com.squareup.moshi.Moshi
@@ -66,10 +68,15 @@ object AppModule {
 
     @Singleton
     @Provides
-    @Named("favorite")
     fun provideSharePref(@ApplicationContext context: Context): SharedPreferencesOne<FavoriteData> = SharedPreferenceUtil(
         context,
         FavoriteData::class.java
+    )
+
+    @Singleton
+    @Provides
+    fun provideShare(sharedPreferencesOne: SharedPreferencesOne<FavoriteData>): FavoriteLocalSourceInt = FavoriteLocalSource(
+        sharedPreferencesOne
     )
 
     @Singleton

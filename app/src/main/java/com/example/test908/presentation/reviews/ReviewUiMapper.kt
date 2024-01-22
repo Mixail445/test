@@ -9,6 +9,12 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class ReviewUiMapper @Inject constructor(@ApplicationContext val context: Context) {
+    private val drawableFavorite by lazy {
+        ContextCompat.getDrawable(context, R.drawable.baseline_favorite_24)
+    }
+    private val drawableNotFavorite by lazy {
+        ContextCompat.getDrawable(context, R.drawable.baseline_favorite_border_24)
+    }
     fun convertTimer(time: Long): String? {
         val min = TimeUnit.SECONDS.toMinutes(time)
         val sec = time % 60
@@ -34,11 +40,11 @@ class ReviewUiMapper @Inject constructor(@ApplicationContext val context: Contex
             )}"
         } }
 
-    fun checkFlagForAdapter(isFavorite: Boolean): Drawable? {
+    fun getDrawable(isFavorite: Boolean): Drawable? {
        return if (isFavorite) {
-           ContextCompat.getDrawable(context, R.drawable.baseline_favorite_24)
+           drawableFavorite
        } else {
-           ContextCompat.getDrawable(context, R.drawable.baseline_favorite_border_24)
+           drawableNotFavorite
        }
     }
 }

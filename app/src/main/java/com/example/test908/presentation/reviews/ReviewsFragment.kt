@@ -110,12 +110,12 @@ class ReviewsFragment : Fragment() {
         )
     }
     private fun handleState(model: ReviewsView.Model): Unit = model.run {
-        binding.tvDate.text = model.date
-        binding.svQuery.setQuery(model.query, false)
-        adapter.items = model.reviewItems
-        binding.ivIcClose.isVisible = model.isClearDateIconVisible
-        binding.swipeContainer.isRefreshing = model.isLoading
-        binding.tvTimer.text = model.timer
+        binding.tvDate.text = date
+        binding.svQuery.setQuery(query, false)
+        adapter.items = reviewItems
+        binding.ivIcClose.isVisible = isClearDateIconVisible
+        binding.swipeContainer.isRefreshing = isLoading
+        binding.tvTimer.text = timer
     }
     override fun onStart() {
         super.onStart()

@@ -8,16 +8,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.savedstate.SavedStateRegistryOwner
 import com.example.test908.domain.repository.review.ReviewRepository
-import com.example.test908.domain.repository.review.model.Review
 import com.example.test908.presentation.common.Screens
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -28,7 +26,6 @@ class DetailReviewViewModel @AssistedInject constructor(
     @Assisted state: SavedStateHandle,
     private val repository: ReviewRepository
 ) : ViewModel() {
-    private lateinit var _reviews: Review
     private fun produceInitialState() =
         DetailReviewView.Model(
             photo = "",
@@ -54,11 +51,14 @@ class DetailReviewViewModel @AssistedInject constructor(
     }
 
     private suspend fun getDataFromDb(index: String) {
-       repository.fetchReviewsById(index).map { _reviews = it }.stateIn(viewModelScope)
-        _uiState.update { model ->
-            model.copy(photo = _reviews.multimedia, text = _reviews.byline)
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.update { model ->
+                model.copy(
+                    photo = repository.fetchReviewsById(index).multimedia,
+                    text = repository.fetchReviewsById(index).byline
+                )
+            }
         }
-
     }
 
     @AssistedFactory

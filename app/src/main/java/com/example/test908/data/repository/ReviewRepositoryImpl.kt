@@ -28,8 +28,8 @@ class ReviewRepositoryImpl @Inject constructor(
            }
         }
 
-    override suspend fun fetchReviewsById(id: String): Flow<Review> {
-        return localSource.getDataById(id.toInt()).map { it.mapToDomain() }
+    override suspend fun fetchReviewsById(id: String): Review {
+        return localSource.getDataById(id.toInt()).mapToDomain()
     }
 
 }

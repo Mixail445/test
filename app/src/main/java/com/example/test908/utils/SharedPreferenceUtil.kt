@@ -32,7 +32,7 @@ class SharedPreferenceUtil<T : Any>@Inject constructor(
         preferences.getString(
         key,
         ""
-        ).let { jsonAdapter.fromJson(it) }
+        ).let { it?.let { it1 -> jsonAdapter.fromJson(it1) } }
 
     override fun setData(key: String, data: T) {
         preferences.edit().putString(key, jsonAdapter.toJson(data)).apply()

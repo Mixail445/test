@@ -14,5 +14,5 @@ data class ReviewUi(
     val date: String,
     val title: String,
     val pictureSrc: String,
-    val favorite: @RawValue Drawable? = null
+    val favorite: @RawValue Drawable?
 ) : BaseItem, Parcelable

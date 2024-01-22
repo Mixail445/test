@@ -8,5 +8,5 @@ interface ReviewLocalSource {
     suspend fun insertReviewLocal(insert: List<ReviewEntity>)
     suspend fun delete()
     suspend fun refreshReview(review: List<ReviewEntity>)
-    suspend fun getDataById(id: Int): Flow<ReviewEntity>
+    suspend fun getDataById(id: Int): ReviewEntity
 }

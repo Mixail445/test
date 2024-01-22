@@ -26,5 +26,5 @@ interface ReviewDao {
     }
 
     @Query("SELECT*FROM ${"review"} WHERE id=:id")
-    fun getReviewById(id: Int): Flow<ReviewEntity>
+    fun getReviewById(id: Int): ReviewEntity
 }
