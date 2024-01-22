@@ -17,7 +17,6 @@ import com.example.test908.utils.ErrorHandel
 import com.example.test908.utils.FavoriteLocalSourceInt
 import com.example.test908.utils.UtilTimer
 import com.example.test908.utils.onError
-import com.example.test908.utils.onSuccess
 import com.example.test908.utils.toEpochMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.time.LocalDateTime
@@ -75,6 +74,7 @@ class ReviewsViewModel @Inject constructor(
             _uiState.update { it.copy(timer = reviewUiMapper.convertTimer(time.toLong())) }
         }
 
+
     }
     private suspend fun initData() {
         getDataFromDb()
@@ -88,16 +88,8 @@ class ReviewsViewModel @Inject constructor(
         if (uiState.value.isLoading) return
         _uiState.update { it.copy(isLoading = true) }
 
-        repository.getReviewsRemote()
-            .onSuccess { list ->
-                _reviews = list as List<Review>
-                val filteredReviews = filterByDateAndQuery().map { it.mapToUi(reviewUiMapper) }
+        repository.getReviewsRemote().onError(::processError)
 
-                _uiState.update { model ->
-                    model.copy(reviewItems = filteredReviews)
-                }
-            }
-            .onError(::processError)
         _uiState.update { it.copy(isLoading = false) }
     }
 
@@ -107,22 +99,10 @@ class ReviewsViewModel @Inject constructor(
 
             }.stateIn(viewModelScope)
 
-        val filteredReviews = filterByDateAndQuery().map {
-            it.mapToUi(reviewUiMapper)
-        }.toMutableList()
-
         favoriteLocalSourceInt.getId()?.item?.let { _favorites.addAll(it) }
 
-        _favorites.forEach { id ->
-            filteredReviews.forEachIndexed { index, reviewUi ->
-                reviewUi.takeIf { it.itemId == id }?.let {
-                    filteredReviews[index] = it.copy(favorite = reviewUiMapper.getDrawable(true))
-                }
-            }
-        }
-
         _uiState.update { model ->
-            model.copy(reviewItems = filteredReviews)
+            model.copy(reviewItems = getFinalList())
         }
     }
     fun addFavorite(id: String) {
@@ -131,17 +111,11 @@ class ReviewsViewModel @Inject constructor(
         } else {
             _favorites.add(id)
         }
+
         favoriteLocalSourceInt.setId(favorite)
-        val list = _reviews.map { it.mapToUi(reviewUiMapper) }.toMutableList()
-        _favorites.forEach { id ->
-            list.forEachIndexed { index, reviewUi ->
-                reviewUi.takeIf { it.itemId == id }?.let {
-                    list[index] = it.copy(favorite = reviewUiMapper.getDrawable(true))
-                }
-            }
-        }
+
             _uiState.update {
-                it.copy(reviewItems = list)
+                it.copy(reviewItems = getFinalList())
             }
 
     }
@@ -165,20 +139,17 @@ class ReviewsViewModel @Inject constructor(
     private fun onQueryReviewsTextUpdated(value: String) {
         searchQuery = value
         _uiState.update { it.copy(query = value) }
-        val filteredReviews = filterByDateAndQuery().map { it.mapToUi(reviewUiMapper) }
-        _uiState.update { it.copy(reviewItems = filteredReviews) }
+        _uiState.update { it.copy(reviewItems = getFinalList()) }
     }
 
     private fun handleUserSelectPeriod(dateStart: Long, dateEnd: Long) {
         searchDateStart = DateUtils.parseLocalDateTime(dateStart)
         searchDateEnd = DateUtils.parseLocalDateTime(dateEnd)
 
-        val filteredReviews = filterByDateAndQuery().map { it.mapToUi(reviewUiMapper) }
-
         _uiState.update {
             it.copy(
                 isClearDateIconVisible = true,
-                reviewItems = filteredReviews,
+                reviewItems = getFinalList(),
                 date = DateUtils.getCalendarUiDate(searchDateStart, searchDateEnd)
             )
         }
@@ -216,13 +187,12 @@ class ReviewsViewModel @Inject constructor(
     private fun onCalendarClearDateClick() {
         searchDateStart = null
         searchDateEnd = null
-        val filteredReviews = filterByDateAndQuery().map { it.mapToUi(reviewUiMapper) }
 
         _uiState.update {
             it.copy(
                 date = "",
                 isClearDateIconVisible = false,
-                reviewItems = filteredReviews
+                reviewItems = getFinalList()
             )
         }
     }
@@ -242,4 +212,10 @@ class ReviewsViewModel @Inject constructor(
             }
         }
     }
+    private fun getFinalList() = filterByDateAndQuery().map { item ->
+            val isInFavorite = _favorites.any { it == item.localId }
+            val icon = reviewUiMapper.getDrawable(isInFavorite)
+            item.mapToUi(icon)
+    }
+
 }

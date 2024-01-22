@@ -52,10 +52,11 @@ class DetailReviewViewModel @AssistedInject constructor(
 
     private suspend fun getDataFromDb(index: String) {
         viewModelScope.launch(Dispatchers.IO) {
+            val db = repository.fetchReviewsById(index)
             _uiState.update { model ->
                 model.copy(
-                    photo = repository.fetchReviewsById(index).multimedia,
-                    text = repository.fetchReviewsById(index).byline
+                    photo = db.multimedia,
+                    text = db.byline
                 )
             }
         }

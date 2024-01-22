@@ -17,7 +17,7 @@ import com.example.test908.presentation.common.Router
 import com.example.test908.presentation.common.RouterImpl
 import com.example.test908.presentation.reviews.FavoriteData
 import com.example.test908.utils.ErrorHandel
-import com.example.test908.utils.FavoriteLocalSource
+import com.example.test908.utils.FavoriteLocalSourceImpl
 import com.example.test908.utils.FavoriteLocalSourceInt
 import com.example.test908.utils.SharedPreferenceUtil
 import com.example.test908.utils.SharedPreferencesOne
@@ -75,7 +75,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideShare(sharedPreferencesOne: SharedPreferencesOne<FavoriteData>): FavoriteLocalSourceInt = FavoriteLocalSource(
+    fun provideShare(sharedPreferencesOne: SharedPreferencesOne<FavoriteData>): FavoriteLocalSourceInt = FavoriteLocalSourceImpl(
         sharedPreferencesOne
     )
 
