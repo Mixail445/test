@@ -1,9 +1,10 @@
-package com.example.test908.presentation.main
+package com.example.test908.presentation.home
 
 import android.os.Parcelable
+import com.example.test908.presentation.common.Screens
 import kotlinx.parcelize.Parcelize
 
-class MainView {
+class HomeView {
     @Parcelize
     data class Model(
         val reviewColor: Int,
@@ -13,16 +14,14 @@ class MainView {
         val toolbarBackgroundColor: Int,
         val criticBackgroundColor: Int,
         val reviewBackgroundColor: Int
-        
+
     ) : Parcelable
-
     sealed interface Event {
-        data object OnClickCritic : Event
         data object OnClickReview : Event
-        
+        data object OnClickCritic : Event
     }
-
     sealed interface UiLabel {
-        data class NavigateToNext(val screen: Screens) : UiLabel
+        data class ShowReviewScreen(val screens: Screens) : UiLabel
+        data class ShowCriticScreen(val screens: Screens) : UiLabel
     }
 }

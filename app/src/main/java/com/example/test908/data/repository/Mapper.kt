@@ -20,7 +20,8 @@ fun ReviewEntity.mapToDomain() =
         multimedia = multimedia,
         publishedDate = DateUtils.parseLocalDateTime(publishedDate),
         title = title,
-        shortUrl = shortUrl
+        shortUrl = shortUrl,
+        localId = id.toString()
     )
 
 

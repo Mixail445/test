@@ -6,12 +6,22 @@ import com.example.test908.databinding.ItemReviewBinding
 import com.example.test908.presentation.common.BaseItem
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 
-fun reviewItemAdapterDelegate() =
+fun reviewItemAdapterDelegate(
+    onItemClicked: (String) -> Unit,
+    onFavoriteClicked: (String) -> Unit
+) =
     adapterDelegateViewBinding<ReviewUi, BaseItem, ItemReviewBinding>(
         viewBinding = { layoutInflater, parent ->
             ItemReviewBinding.inflate(layoutInflater, parent, false)
         }
     ) {
+        binding.photoItem.setOnClickListener {
+            onItemClicked(item.itemId)
+        }
+        binding.imageView.setOnClickListener {
+            onFavoriteClicked(item.itemId)
+        }
+
         bind {
             binding.run {
                 bodyItem.text = item.abstract
@@ -22,6 +32,7 @@ fun reviewItemAdapterDelegate() =
                     .error(R.drawable.img)
                     .placeholder(R.drawable.img)
                     .into(binding.photoItem)
+                imageView.setImageDrawable(item.favorite)
             }
         }
     }

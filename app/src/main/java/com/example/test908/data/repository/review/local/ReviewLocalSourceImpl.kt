@@ -30,5 +30,7 @@ class ReviewLocalSourceImpl(
         reviewDao.refreshReview(review)
     }
 
-
+    override suspend fun getDataById(id: Int): ReviewEntity = reviewDao.getReviewById(id)
 }
+
+
