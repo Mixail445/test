@@ -2,7 +2,7 @@ package com.example.test908.presentation.reviews
 
 import android.os.Parcelable
 import com.example.test908.presentation.common.Screens
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 interface ReviewsView {
 @Parcelize

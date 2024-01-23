@@ -41,5 +41,4 @@ class SharedPreferenceUtil<T : Any>@Inject constructor(
     override fun clearData() {
         preferences.all.clear()
     }
-
 }

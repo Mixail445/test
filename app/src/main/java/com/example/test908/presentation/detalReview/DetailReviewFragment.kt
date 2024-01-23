@@ -54,7 +54,7 @@ class DetailReviewFragment : Fragment() {
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViewModel()
-                binding.toolbarOne.reviewes.setOnClickListener {
+        binding.toolbarOne.reviewes.setOnClickListener {
             viewModel.onEvent(DetailReviewView.Event.OnClickBackButton)
         }
 
