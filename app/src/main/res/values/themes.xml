@@ -39,9 +39,15 @@
     <style name="Theme.TestAndroiiiiiiid.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.TestAndroiiiiiiid.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
-  <!-- Base application theme. -->
     <style name="Base.Theme.Test908" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
+
+    <style name="CategoryTabNight" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">@android:color/white</item>
+        <item name="tabSelectedTextColor">@android:color/white</item>
+        <item name="tabTextAppearance">@color/orange</item>
+        <item name="tabBackground">@color/orange</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+    </style>
+
 </resources>

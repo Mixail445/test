@@ -28,40 +28,42 @@ class HomeViewModel @Inject constructor(
     private val _uiState =
         MutableStateFlow(stateHandle.get<HomeView.Model>(STATE_KEY) ?: produceInitialState())
     val uiState: StateFlow<HomeView.Model> = _uiState
-    private fun produceInitialState() = HomeView.Model(
-        reviewColor = homeUiMapper.orangeColor(),
-        criticColor = homeUiMapper.whiteColor(),
-        statusBarColor = homeUiMapper.orangeColor(),
-        toolbarColorText = homeUiMapper.whiteColor(),
-        toolbarBackgroundColor = homeUiMapper.orangeColor(),
-        criticBackgroundColor = homeUiMapper.orangeColor(),
-        reviewBackgroundColor = homeUiMapper.whiteColor()
-    )
-    private fun handlerOnCLickCritic() {
+    private fun produceInitialState() = with(homeUiMapper) {
+        HomeView.Model(
+            reviewColor = orangeColor(),
+            criticColor = whiteColor(),
+            statusBarColor = orangeColor(),
+            toolbarColorText = whiteColor(),
+            toolbarBackgroundColor = orangeColor(),
+            criticBackgroundColor = orangeColor(),
+            reviewBackgroundColor = whiteColor()
+        )
+    }
+    private fun handlerOnCLickCritic() = with(homeUiMapper) {
         _uiLabels.value = HomeView.UiLabel.ShowReviewScreen(Screens.Critics)
         _uiState.update {
             it.copy(
-                reviewColor = homeUiMapper.whiteColor(),
-                criticColor = homeUiMapper.blueColor(),
-                statusBarColor = homeUiMapper.blueColor(),
-                toolbarColorText = homeUiMapper.whiteColor(),
-                toolbarBackgroundColor = homeUiMapper.blueColor(),
-                criticBackgroundColor = homeUiMapper.whiteColor(),
-                reviewBackgroundColor = homeUiMapper.blueColor()
+                reviewColor = whiteColor(),
+                criticColor = blueColor(),
+                statusBarColor = blueColor(),
+                toolbarColorText = whiteColor(),
+                toolbarBackgroundColor = blueColor(),
+                criticBackgroundColor = whiteColor(),
+                reviewBackgroundColor = blueColor()
             )
         }
     }
-    private fun handlerOnCLickReview() {
+    private fun handlerOnCLickReview()= with(homeUiMapper){
         _uiLabels.value = HomeView.UiLabel.ShowReviewScreen(Screens.Reviews)
         _uiState.update {
             it.copy(
-                reviewColor = homeUiMapper.orangeColor(),
-                criticColor = homeUiMapper.whiteColor(),
-                statusBarColor = homeUiMapper.orangeColor(),
-                toolbarColorText = homeUiMapper.whiteColor(),
-                toolbarBackgroundColor = homeUiMapper.orangeColor(),
-                criticBackgroundColor = homeUiMapper.orangeColor(),
-                reviewBackgroundColor = homeUiMapper.whiteColor()
+                reviewColor = orangeColor(),
+                criticColor = whiteColor(),
+                statusBarColor = orangeColor(),
+                toolbarColorText = whiteColor(),
+                toolbarBackgroundColor = orangeColor(),
+                criticBackgroundColor = orangeColor(),
+                reviewBackgroundColor = whiteColor()
             )
         }
     }

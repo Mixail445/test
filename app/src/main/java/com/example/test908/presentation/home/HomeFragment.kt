@@ -6,9 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.example.test908.R
 import com.example.test908.databinding.HomeFragmentBinding
 import com.example.test908.presentation.common.Router
-import com.example.test908.presentation.common.launchAndRepeatWithViewLifecycle
 import com.example.test908.presentation.common.subscribe
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -39,26 +39,23 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         initViewModel()
-        binding.toolbar.critics.setOnClickListener {
-            viewModel.onEvent(HomeView.Event.OnClickCritic)
+        binding.bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.reviewTab -> {
+                    viewModel.onEvent(HomeView.Event.OnClickReview)
+                    true
+                }
+                R.id.criticTab -> {
+                    viewModel.onEvent(HomeView.Event.OnClickCritic)
+                    true
+                }
+                else -> false
+            }
         }
-        binding.toolbar.reviewes.setOnClickListener {
-            viewModel.onEvent(HomeView.Event.OnClickReview)
-        }
-    }
-    private fun handleState(model: HomeView.Model): Unit = model.run {
-        with(binding.toolbar) {
-            critics.setTextColor(criticColor)
-            reviewes.setTextColor(reviewColor)
-            toolbarr.setBackgroundColor(toolbarBackgroundColor)
-            reviewes.setBackgroundColor(reviewBackgroundColor)
-            critics.setBackgroundColor(criticBackgroundColor)
-        }
-    }
+     }
     private fun initViewModel() {
         with(viewModel) {
             subscribe(uiLabels, ::handleUiLabel)
-            launchAndRepeatWithViewLifecycle { uiState.collect(::handleState) }
         }
     }
     override fun onStart() {

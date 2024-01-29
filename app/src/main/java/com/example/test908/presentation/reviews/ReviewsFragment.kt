@@ -55,26 +55,28 @@ class ReviewsFragment : Fragment() {
         initViewModel()
     }
     private fun initViews() {
-        binding.rvContent.apply {
-            adapter = this@ReviewsFragment.adapter
-            setHasFixedSize(true)
-            addItemDecoration(RecyclerViewItemDecoration())
-        }
-        binding.ivIcCalendar.setOnClickListener {
-            viewModel.onEvent(Event.OnCalendarClick)
-        }
-        binding.ivIcClose.setOnClickListener {
-            viewModel.onEvent(Event.OnCalendarClearDateClick)
-        }
-        binding.svQuery.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?) = false
-            override fun onQueryTextChange(newText: String): Boolean {
-                viewModel.onEvent(Event.OnQueryReviewsTextUpdated(newText))
-                return true
+        with(binding) {
+            rvContent.apply {
+                adapter = this@ReviewsFragment.adapter
+                setHasFixedSize(true)
+                addItemDecoration(RecyclerViewItemDecoration())
             }
-        })
-        binding.swipeContainer.setOnRefreshListener {
-            viewModel.onEvent(Event.RefreshReviews)
+            ivIcCalendar.setOnClickListener {
+                viewModel.onEvent(Event.OnCalendarClick)
+            }
+            ivIcClose.setOnClickListener {
+                viewModel.onEvent(Event.OnCalendarClearDateClick)
+            }
+            svQuery.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?) = false
+                override fun onQueryTextChange(newText: String): Boolean {
+                    viewModel.onEvent(Event.OnQueryReviewsTextUpdated(newText))
+                    return true
+                }
+            })
+            swipeContainer.setOnRefreshListener {
+                viewModel.onEvent(Event.RefreshReviews)
+            }
         }
     }
     private fun initViewModel() {

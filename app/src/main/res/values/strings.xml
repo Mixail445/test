@@ -19,4 +19,8 @@
     <string name="sorry_connection_error">Sorry connection error</string>
     <string name="sorry_something_went_wrong">Sorry something went wrong</string>
     <string name="todo">TODO</string>
+    <string name="review">Review</string>
+    <string name="critic">Critic</string>
+
 </resources>
+

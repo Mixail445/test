@@ -15,24 +15,27 @@ fun reviewItemAdapterDelegate(
             ItemReviewBinding.inflate(layoutInflater, parent, false)
         }
     ) {
-        binding.photoItem.setOnClickListener {
-            onItemClicked(item.itemId)
+        with(binding) {
+            photoItem.setOnClickListener {
+                onItemClicked(item.itemId)
+            }
+            imageView.setOnClickListener {
+                onFavoriteClicked(item.itemId)
+            }
         }
-        binding.imageView.setOnClickListener {
-            onFavoriteClicked(item.itemId)
-        }
-
         bind {
             binding.run {
-                bodyItem.text = item.abstract
-                titleItem.text = item.title
-                dataItem.text = item.date
-                nameItem.text = item.byline
-                Glide.with(itemView.context).load(item.pictureSrc)
-                    .error(R.drawable.img)
-                    .placeholder(R.drawable.img)
-                    .into(binding.photoItem)
-                imageView.setImageDrawable(item.favorite)
+                with(item) {
+                    bodyItem.text = abstract
+                    titleItem.text = title
+                    dataItem.text = date
+                    nameItem.text = byline
+                    Glide.with(itemView.context).load(pictureSrc)
+                        .error(R.drawable.img)
+                        .placeholder(R.drawable.img)
+                        .into(binding.photoItem)
+                    imageView.setImageDrawable(favorite)
+                }
             }
         }
     }
