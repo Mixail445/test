@@ -17,7 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import javax.inject.Named
 
-
 @AndroidEntryPoint
 class DetailReviewFragment : Fragment() {
     private var _binding: FragmentDetailReviewsBinding? = null
@@ -31,52 +30,61 @@ class DetailReviewFragment : Fragment() {
     lateinit var factory: DetailReviewViewModel.Factory
 
     private val viewModel: DetailReviewViewModel by viewModels {
-        LambdaFactory(this) {
-        handle: SavedStateHandle ->
-        factory.build(handle, arguments?.getString("key"))
+        LambdaFactory(this) { handle: SavedStateHandle ->
+            factory.build(handle, arguments?.getString("key"))
+        }
     }
-    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentDetailReviewsBinding.inflate(inflater, container, false)
         return binding.root
     }
+
     private fun initViewModel() {
         with(viewModel) {
             subscribe(uiLabels, ::handleUiLabel)
             launchAndRepeatWithViewLifecycle { uiState.collect(::handleState) }
         }
-      
     }
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
         initViewModel()
         binding.toolbar.ivBack.setOnClickListener {
             viewModel.onEvent(DetailReviewView.Event.OnClickBackButton)
         }
+    }
 
-    }
-    private fun handleUiLabel(uiLabel: DetailReviewView.UiLabel): Unit = when (uiLabel) {
-        is DetailReviewView.UiLabel.ShowHomeFragment -> router.navigateTo(uiLabel.screens)
-    }
- 
-    private fun handleState(model: DetailReviewView.Model): Unit = model.run {
-        Glide.with(this@DetailReviewFragment).load(model.photo)
-            .error(R.drawable.img)
-            .placeholder(R.drawable.img)
-            .into(binding.ivReview)
-        binding.tvReview.text = model.text
-    }
+    private fun handleUiLabel(uiLabel: DetailReviewView.UiLabel): Unit =
+        when (uiLabel) {
+            is DetailReviewView.UiLabel.ShowHomeFragment -> router.navigateTo(uiLabel.screens)
+        }
+
+    private fun handleState(model: DetailReviewView.Model): Unit =
+        model.run {
+            Glide.with(this@DetailReviewFragment).load(model.photo)
+                .error(R.drawable.img)
+                .placeholder(R.drawable.img)
+                .into(binding.ivReview)
+            binding.tvReview.text = model.text
+        }
+
     override fun onStart() {
         super.onStart()
-        router.init(requireActivity().supportFragmentManager)
+        router.init(this, requireActivity().supportFragmentManager)
     }
+
     override fun onStop() {
         super.onStop()
-       router.clear()
+        router.clear()
     }
+
     override fun onDestroy() {
         super.onDestroy()
         _binding = null

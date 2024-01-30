@@ -16,6 +16,6 @@ data class Books(
         nameBooksStore = title,
         itemId = id.toString(),
         nameAuthor = author,
-        link = buyLinksName.map { it.map()}
+        link = buyLinksName.map { it.map() }
     )
 }

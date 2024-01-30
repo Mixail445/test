@@ -4,7 +4,15 @@ import android.content.Context
 import com.example.test908.Constant.BASE_URL
 import com.example.test908.R
 import com.example.test908.data.repository.BooksRepositoryImpl
+import com.example.test908.data.repository.FeatureFlagRepositoryImpl
+import com.example.test908.data.repository.LimitedSeriesRepositoryImpl
 import com.example.test908.data.repository.ReviewRepositoryImpl
+import com.example.test908.data.repository.books.featureFlag.FeatureFlagApi
+import com.example.test908.data.repository.books.featureFlag.FeatureFlagApiImpl
+import com.example.test908.data.repository.books.featureFlag.remote.FeatureFlagRemoteSourceImpl
+import com.example.test908.data.repository.books.limitedSeries.LimitedSeriesApi
+import com.example.test908.data.repository.books.limitedSeries.LimitedSeriesApiImpl
+import com.example.test908.data.repository.books.limitedSeries.remote.LimitedSeriesRemoteSourceImpl
 import com.example.test908.data.repository.books.remote.BooksApi
 import com.example.test908.data.repository.books.remote.BooksRemoteSourceImpl
 import com.example.test908.data.repository.review.local.ReviewDao
@@ -15,6 +23,10 @@ import com.example.test908.data.repository.review.remote.ReviewApi
 import com.example.test908.data.repository.review.remote.ReviewRemoteSourceImpl
 import com.example.test908.domain.repository.books.BooksRemoteSource
 import com.example.test908.domain.repository.books.BooksRepository
+import com.example.test908.domain.repository.featureFlag.FeatureFlagRemoteSource
+import com.example.test908.domain.repository.featureFlag.FeatureFlagRepository
+import com.example.test908.domain.repository.limitedSeries.LimitedSeriesRemoteSource
+import com.example.test908.domain.repository.limitedSeries.LimitedSeriesRepository
 import com.example.test908.domain.repository.review.ReviewLocalSource
 import com.example.test908.domain.repository.review.ReviewRemoteSource
 import com.example.test908.domain.repository.review.ReviewRepository
@@ -33,12 +45,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
-import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -51,14 +63,28 @@ object AppModule {
     @Provides
     fun provideReviewsRemoteSource(
         api: ReviewApi,
-        dispatchersProvider: DispatchersProvider
+        dispatchersProvider: DispatchersProvider,
     ): ReviewRemoteSource = ReviewRemoteSourceImpl(api, dispatchersProvider)
+
+    @Singleton
+    @Provides
+    fun provideLimitedRemoteSource(
+        api: LimitedSeriesApi,
+        dispatchersProvider: DispatchersProvider,
+    ): LimitedSeriesRemoteSource = LimitedSeriesRemoteSourceImpl(api, dispatchersProvider)
+
+    @Singleton
+    @Provides
+    fun provideFeatureFlagRemoteSource(
+        api: FeatureFlagApi,
+        dispatchersProvider: DispatchersProvider,
+    ): FeatureFlagRemoteSource = FeatureFlagRemoteSourceImpl(api, dispatchersProvider)
 
     @Singleton
     @Provides
     fun provideReviewsLocalSource(
         dao: ReviewDao,
-        dispatchersProvider: DispatchersProvider
+        dispatchersProvider: DispatchersProvider,
     ): ReviewLocalSource = ReviewLocalSourceImpl(dao, dispatchersProvider)
 
     @Singleton
@@ -73,16 +99,20 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSharePref(@ApplicationContext context: Context): SharedPreferencesOne<FavoriteData> = SharedPreferenceUtil(
-        context,
-        FavoriteData::class.java
-    )
+    fun provideSharePref(
+        @ApplicationContext context: Context,
+    ): SharedPreferencesOne<FavoriteData> =
+        SharedPreferenceUtil(
+            context,
+            FavoriteData::class.java,
+        )
 
     @Singleton
     @Provides
-    fun provideShare(sharedPreferencesOne: SharedPreferencesOne<FavoriteData>): FavoriteLocalSourceInt = FavoriteLocalSourceImpl(
-        sharedPreferencesOne
-    )
+    fun provideShare(sharedPreferencesOne: SharedPreferencesOne<FavoriteData>): FavoriteLocalSourceInt =
+        FavoriteLocalSourceImpl(
+            sharedPreferencesOne,
+        )
 
     @Singleton
     @Provides
@@ -96,9 +126,17 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideErrorHandler(@ApplicationContext context: Context): ErrorHandel = ErrorHandel(
-        context
-    )
+    fun provideLimitedSeriesRepository(limitedSeriesRepositoryImpl: LimitedSeriesRepositoryImpl): LimitedSeriesRepository =
+        limitedSeriesRepositoryImpl
+
+    @Singleton
+    @Provides
+    fun provideErrorHandler(
+        @ApplicationContext context: Context,
+    ): ErrorHandel =
+        ErrorHandel(
+            context,
+        )
 
     @Singleton
     @Provides
@@ -113,27 +151,28 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(
-        okHttpClient: OkHttpClient
-    ): Retrofit = Retrofit.Builder()
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .baseUrl(BASE_URL)
-        .client(okHttpClient)
-        .build()
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .build()
 
     @Singleton
     @Provides
-    fun provideOkHttpClient() = OkHttpClient.Builder()
-        .addInterceptor(RequestInterceptor())
-        .addInterceptor(interceptor)
-        .build()
+    fun provideOkHttpClient() =
+        OkHttpClient.Builder()
+            .addInterceptor(RequestInterceptor())
+            .addInterceptor(interceptor)
+            .build()
 
-    private val interceptor = run {
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.apply {
-            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+    private val interceptor =
+        run {
+            val httpLoggingInterceptor = HttpLoggingInterceptor()
+            httpLoggingInterceptor.apply {
+                httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+            }
         }
-    }
 
     @Singleton
     @Provides
@@ -141,12 +180,25 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideFeatureFlagRepository(featureFlagRepositoryImpl: FeatureFlagRepositoryImpl): FeatureFlagRepository =
+        featureFlagRepositoryImpl
+
+    @Singleton
+    @Provides
     fun provideBooksRemoteSource(
         api: BooksApi,
-        dispatchersProvider: DispatchersProvider
+        dispatchersProvider: DispatchersProvider,
     ): BooksRemoteSource = BooksRemoteSourceImpl(api, dispatchersProvider)
 
     @Singleton
     @Provides
     fun provideBooksApi(retrofit: Retrofit): BooksApi = retrofit.create(BooksApi::class.java)
+
+    @Singleton
+    @Provides
+    fun provideFeatureFlagApi(featureFlagApiImpl: FeatureFlagApiImpl): FeatureFlagApi = featureFlagApiImpl
+
+    @Singleton
+    @Provides
+    fun provideLimitedSeriesApi(limitedSeriesApiImpl: LimitedSeriesApiImpl): LimitedSeriesApi = limitedSeriesApiImpl
 }

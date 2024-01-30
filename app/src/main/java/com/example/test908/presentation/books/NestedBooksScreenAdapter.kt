@@ -5,25 +5,26 @@ import com.example.test908.utils.itemCallback
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 
 class NestedBooksScreenAdapter(onNestedClick: (String) -> Unit) : AsyncListDifferDelegationAdapter<BaseItem>(
-    diffUtils()
+    diffUtils(),
 ) {
     init {
-       delegatesManager
+        delegatesManager
             .addDelegate(
-              NESTED_ITEM_VIEW_TYPE,
-               nestedItemAdapterDelegate(onClickNested = onNestedClick)
-           )
+                NESTED_ITEM_VIEW_TYPE,
+                nestedItemAdapterDelegate(onClickNested = onNestedClick),
+            )
     }
+
     companion object {
         const val NESTED_ITEM_VIEW_TYPE = -1000
     }
 }
 
-
-private fun diffUtils() = itemCallback<BaseItem>(
-    areItemsTheSame = { oldItem, newItem -> oldItem.itemId == newItem.itemId },
-    areContentsTheSame = { oldItem, newItem -> oldItem == newItem },
-    getChangePayload = { _, _ ->
-        Any()
-    }
-)
+private fun diffUtils() =
+    itemCallback<BaseItem>(
+        areItemsTheSame = { oldItem, newItem -> oldItem.itemId == newItem.itemId },
+        areContentsTheSame = { oldItem, newItem -> oldItem == newItem },
+        getChangePayload = { _, _ ->
+            Any()
+        },
+    )
