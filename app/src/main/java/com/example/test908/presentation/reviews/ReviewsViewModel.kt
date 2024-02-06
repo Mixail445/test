@@ -73,8 +73,6 @@ class ReviewsViewModel @Inject constructor(
         (state.get<String>(TIMER_KEY))?.let { time ->
             _uiState.update { it.copy(timer = reviewUiMapper.convertTimer(time.toLong())) }
         }
-
-
     }
     private suspend fun initData() {
         getDataFromDb()
@@ -99,7 +97,7 @@ class ReviewsViewModel @Inject constructor(
 
             }.stateIn(viewModelScope)
 
-        favoriteLocalSourceInt.getId()?.item?.let { _favorites.addAll(it) }
+     //   favoriteLocalSourceInt.getId()?.item?.let { _favorites.addAll(it) }
 
         _uiState.update { model ->
             model.copy(reviewItems = getFinalList())

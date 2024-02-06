@@ -4,7 +4,15 @@ import android.content.Context
 import com.example.test908.Constant.BASE_URL
 import com.example.test908.R
 import com.example.test908.data.repository.BooksRepositoryImpl
+import com.example.test908.data.repository.FeatureFlagRepositoryImpl
+import com.example.test908.data.repository.LimitedSeriesRepositoryImpl
 import com.example.test908.data.repository.ReviewRepositoryImpl
+import com.example.test908.data.repository.books.featureFlag.FeatureFlagApi
+import com.example.test908.data.repository.books.featureFlag.FeatureFlagApiImpl
+import com.example.test908.data.repository.books.featureFlag.remote.FeatureFlagRemoteSourceImpl
+import com.example.test908.data.repository.books.limitedSeries.LimitedSeriesApi
+import com.example.test908.data.repository.books.limitedSeries.LimitedSeriesApiImpl
+import com.example.test908.data.repository.books.limitedSeries.remote.LimitedSeriesRemoteSourceImpl
 import com.example.test908.data.repository.books.remote.BooksApi
 import com.example.test908.data.repository.books.remote.BooksRemoteSourceImpl
 import com.example.test908.data.repository.review.local.ReviewDao
@@ -15,6 +23,10 @@ import com.example.test908.data.repository.review.remote.ReviewApi
 import com.example.test908.data.repository.review.remote.ReviewRemoteSourceImpl
 import com.example.test908.domain.repository.books.BooksRemoteSource
 import com.example.test908.domain.repository.books.BooksRepository
+import com.example.test908.domain.repository.featureFlag.FeatureFlagRemoteSource
+import com.example.test908.domain.repository.featureFlag.FeatureFlagRepository
+import com.example.test908.domain.repository.limitedSeries.LimitedSeriesRemoteSource
+import com.example.test908.domain.repository.limitedSeries.LimitedSeriesRepository
 import com.example.test908.domain.repository.review.ReviewLocalSource
 import com.example.test908.domain.repository.review.ReviewRemoteSource
 import com.example.test908.domain.repository.review.ReviewRepository
@@ -56,6 +68,20 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideLimitedRemoteSource(
+        api: LimitedSeriesApi,
+        dispatchersProvider: DispatchersProvider
+    ): LimitedSeriesRemoteSource = LimitedSeriesRemoteSourceImpl(api, dispatchersProvider)
+
+    @Singleton
+    @Provides
+    fun provideFeatureFlagRemoteSource(
+        api: FeatureFlagApi,
+        dispatchersProvider: DispatchersProvider
+    ): FeatureFlagRemoteSource = FeatureFlagRemoteSourceImpl(api, dispatchersProvider)
+
+    @Singleton
+    @Provides
     fun provideReviewsLocalSource(
         dao: ReviewDao,
         dispatchersProvider: DispatchersProvider
@@ -93,6 +119,10 @@ object AppModule {
     @Singleton
     @Provides
     fun provideReviewRepository(reviewRepositoryImpl: ReviewRepositoryImpl): ReviewRepository = reviewRepositoryImpl
+
+    @Singleton
+    @Provides
+    fun provideLimitedSeriesRepository(limitedSeriesRepositoryImpl: LimitedSeriesRepositoryImpl): LimitedSeriesRepository = limitedSeriesRepositoryImpl
 
     @Singleton
     @Provides
@@ -141,6 +171,11 @@ object AppModule {
 
     @Singleton
     @Provides
+    fun provideFeatureFlagRepository(featureFlagRepositoryImpl: FeatureFlagRepositoryImpl): FeatureFlagRepository = featureFlagRepositoryImpl
+
+
+    @Singleton
+    @Provides
     fun provideBooksRemoteSource(
         api: BooksApi,
         dispatchersProvider: DispatchersProvider
@@ -149,4 +184,12 @@ object AppModule {
     @Singleton
     @Provides
     fun provideBooksApi(retrofit: Retrofit): BooksApi = retrofit.create(BooksApi::class.java)
+
+    @Singleton
+    @Provides
+    fun provideFeatureFlagApi(featureFlagApiImpl: FeatureFlagApiImpl): FeatureFlagApi = featureFlagApiImpl
+
+    @Singleton
+    @Provides
+    fun provideLimitedSeriesApi(limitedSeriesApiImpl: LimitedSeriesApiImpl): LimitedSeriesApi = limitedSeriesApiImpl
 }

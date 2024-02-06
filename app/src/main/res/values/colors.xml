@@ -10,4 +10,6 @@
     <color name="orange">#F7A072</color>
     <color name="white_2">#f6f7fa</color>
     <color name="blue">#b5e2fa</color>
+    <color name="bottom_sheet_state_1">#dfff24</color>
+    <color name="bottom_sheet_state_2">#03fff3</color>
 </resources>

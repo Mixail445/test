@@ -6,5 +6,6 @@ sealed class Screens {
       data object Books : Screens()
       data object DetailReview : Screens()
       data object HomeFragment : Screens()
+      data object DateFragment : Screens()
 }
 

@@ -25,14 +25,17 @@ class RouterImpl @Inject constructor(private val controller: Int) : Router {
             Screens.Reviews -> moveToFragmentReview()
             Screens.DetailReview -> moveToDetailReview(bundle)
             Screens.HomeFragment -> moveToHomeFragment()
+            Screens.DateFragment -> moveToFragmentWithDate()
         }
     }
-
+    private fun moveToFragmentWithDate() {
+        navController?.navigate(R.id.rcWithDateFragment2)
+    }
     private fun moveToFragmentReview() {
-        navController?.navigate(R.id.reviewsFragment)
+        navController?.navigateTo(R.id.reviewsFragment)
     }
     private fun moveToFragmentBooks() {
-        navController?.navigate(R.id.booksFragment)
+        navController?.navigateTo(R.id.booksFragment)
     }
     private fun moveToDetailReview(bundle: Bundle?) {
         navController?.navigate(R.id.detailReviewFragment, bundle)
@@ -42,5 +45,12 @@ class RouterImpl @Inject constructor(private val controller: Int) : Router {
     }
     override fun back() {
         navController?.popBackStack()
+    }
+    private fun NavController.navigateTo(id: Int) {
+        if (previousBackStackEntry?.id != null) {
+            popBackStack(id, false)
+        } else {
+            navigate(id)
+        }
     }
 }

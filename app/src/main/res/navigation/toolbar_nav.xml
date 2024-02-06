@@ -10,12 +10,10 @@
         android:id="@+id/booksFragment"
         android:name="com.example.test908.presentation.books.BooksFragment"
         android:label="BooksFragment"
-        tools:layout="@layout/fragment_books">
-    </fragment>
+        tools:layout="@layout/fragment_books"/>
     <fragment
         android:id="@+id/reviewsFragment"
         android:name="com.example.test908.presentation.reviews.ReviewsFragment"
         android:label="ReviewsFragment"
-        tools:layout="@layout/fragment_reviews">
-    </fragment>
+        tools:layout="@layout/fragment_reviews"/>
 </navigation>

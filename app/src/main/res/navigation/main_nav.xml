@@ -17,4 +17,8 @@
         android:label="DetailReviewFragment"
         tools:layout="@layout/fragment_detail_reviews">
     </fragment>
+    <fragment
+        android:id="@+id/rcWithDateFragment2"
+        android:name="com.example.test908.presentation.rcWithDate.RcWithDateFragment"
+        android:label="RcWithDateFragment" />
 </navigation>

@@ -22,7 +22,7 @@ fun booksItemAdapterDelegate(onNestedClick: (String) -> Unit) =
         binding.rcBook.adapter = nestedBooksScreenAdapter
         bind {
             with(item) {
-                    nestedBooksScreenAdapter.items = item.link
+                    nestedBooksScreenAdapter.items = link
                     binding.tvBookDetail.text = booksDetail
                     binding.tvNameBook.text = nameBooksStore
                     binding.tvNameAuthor.text = nameAuthor

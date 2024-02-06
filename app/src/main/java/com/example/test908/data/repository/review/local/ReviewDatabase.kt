@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.TypeConverters
 import com.example.test908.data.repository.review.entity.ReviewEntity
 
 @Database(
@@ -12,7 +11,6 @@ import com.example.test908.data.repository.review.entity.ReviewEntity
     version = 1,
     exportSchema = false
 )
-@TypeConverters(ReviewEntityConverter::class)
 abstract class ReviewDatabase : RoomDatabase() {
     abstract fun getReview(): ReviewDao
     companion object {
