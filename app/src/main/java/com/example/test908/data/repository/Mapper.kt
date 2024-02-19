@@ -15,22 +15,20 @@ import com.example.test908.utils.DateUtils
 
 fun ReviewDto.mapToEntity() =
     ReviewEntity(
-        abstract = abstract.orEmpty(),
+        abstracts = abstract.orEmpty(),
         byline = byline.orEmpty(),
         multimedia = multimedia?.firstOrNull()?.url.orEmpty(),
         publishedDate = publishedDate.orEmpty(),
         title = title.orEmpty(),
-        shortUrl = shortUrl.orEmpty(),
     )
 
 fun ReviewEntity.mapToDomain() =
     Review(
-        abstract = abstract,
-        byline = byline,
-        multimedia = multimedia,
+        abstract = abstracts.orEmpty(),
+        byline = byline.orEmpty(),
+        multimedia = multimedia.orEmpty(),
         publishedDate = DateUtils.parseLocalDateTime(publishedDate),
-        title = title,
-        shortUrl = shortUrl,
+        title = title.orEmpty(),
         localId = id.toString(),
     )
 

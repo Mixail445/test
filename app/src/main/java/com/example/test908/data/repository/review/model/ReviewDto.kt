@@ -2,7 +2,6 @@ package com.example.test908.data.repository.review.model
 
 import com.squareup.moshi.Json
 
-
 data class ReviewDto(
     @Json(name = "abstract")
     val abstract: String? = null,
@@ -12,8 +11,6 @@ data class ReviewDto(
     val multimedia: List<MultimediaDto>? = null,
     @Json(name = "published_date")
     val publishedDate: String? = null,
-    @Json(name = "short_url")
-    val shortUrl: String? = null,
     @Json(name = "title")
-    val title: String? = null
+    val title: String? = null,
 )

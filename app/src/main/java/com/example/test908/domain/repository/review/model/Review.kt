@@ -12,17 +12,16 @@ data class Review(
     val multimedia: String,
     val publishedDate: LocalDateTime?,
     val title: String,
-    val shortUrl: String,
-    val localId: String
+    val localId: String,
 ) {
-    fun mapToUi(drawable: Drawable?) = ReviewUi(
-        abstract = abstract,
-        byline = byline,
-        date = publishedDate?.format(DateUtils.CALENDAR_UI_ITEM_FORMAT).orEmpty(),
-        title = title,
-        pictureSrc = multimedia,
-        itemId = localId,
-        favorite = drawable
-    )
+    fun mapToUi(drawable: Drawable?) =
+        ReviewUi(
+            abstract = abstract,
+            byline = byline,
+            date = publishedDate?.format(DateUtils.CALENDAR_UI_ITEM_FORMAT).orEmpty(),
+            title = title,
+            pictureSrc = multimedia,
+            itemId = localId,
+            favorite = drawable,
+        )
 }
-
