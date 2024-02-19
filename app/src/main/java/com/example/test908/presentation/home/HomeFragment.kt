@@ -31,7 +31,7 @@ class HomeFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
-        router.initWithTabs(binding.bottomNavigationView, this, childFragmentManager)
+        router.init(this, childFragmentManager, binding.bottomNavigationView)
     }
 
     override fun onStop() {

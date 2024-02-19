@@ -108,7 +108,7 @@ class BooksViewModel
                             )
                         }
                     }
-                    _uiLabels.value = BooksView.UiLabel.ShowBottomSheetDialog
+                    _uiLabels.value = BooksView.UiLabel.ShowBottomSheetDialog(Screens.DialogFragmentBooks)
                 }.onError { state.update { it.copy(isLoading = false) } }
             }
         }

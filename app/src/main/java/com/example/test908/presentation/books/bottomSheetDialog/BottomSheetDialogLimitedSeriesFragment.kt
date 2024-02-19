@@ -68,10 +68,6 @@ class BottomSheetDialogLimitedSeriesFragment() : BottomSheetDialogFragment() {
             BottomDialogView.UiLabel.CloseDialog -> router.back()
         }
 
-    private fun closeDialog() {
-        this.dismiss()
-    }
-
     override fun onStart() {
         super.onStart()
         router.init(this, requireActivity().supportFragmentManager)

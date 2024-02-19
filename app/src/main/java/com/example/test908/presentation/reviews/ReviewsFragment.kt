@@ -12,7 +12,6 @@ import com.example.test908.databinding.FragmentReviewsBinding
 import com.example.test908.presentation.base.BaseFragment
 import com.example.test908.presentation.common.RecyclerViewItemDecoration
 import com.example.test908.presentation.common.Router
-import com.example.test908.presentation.common.Screens
 import com.example.test908.presentation.common.launchAndRepeatWithViewLifecycle
 import com.example.test908.presentation.common.showDatePickers
 import com.example.test908.presentation.common.showDialogError
@@ -41,7 +40,6 @@ class ReviewsFragment :
 
     @Inject
     lateinit var factory: ReviewsViewModel.Factory
-    private var c: Boolean = false
     override val viewModel: ReviewsViewModel by viewModels {
         LambdaFactory(this) { handle: SavedStateHandle ->
             factory.build(
@@ -104,13 +102,7 @@ class ReviewsFragment :
                 viewModel.onEvent(Event.RefreshReviews)
             }
             filter.mcvIvFilter.setOnClickListener {
-                routerMain.navigateTo(
-                    Screens.FragmentToDialog(
-                        asc = navArgs.byAscending,
-                        desc = navArgs.byDescending,
-                        fav = navArgs.favirite,
-                    ),
-                )
+                viewModel.onEvent(Event.ShowDialogFragment)
             }
         }
     }
@@ -130,7 +122,7 @@ class ReviewsFragment :
                     bundleOf("key" to uiLabel.id),
                 )
 
-            is UiLabel.ShowDialogFragment -> router.navigateTo(Screens.DialogFragmentReview)
+            is UiLabel.ShowDialogFragment -> routerMain.navigateTo(uiLabel.screens)
         }
 
     private fun showFilterDatePicker(date: Long?) {

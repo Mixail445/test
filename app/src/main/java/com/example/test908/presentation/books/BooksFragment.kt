@@ -11,7 +11,6 @@ import androidx.fragment.app.viewModels
 import com.example.test908.databinding.FragmentBooksBinding
 import com.example.test908.presentation.common.RecyclerViewItemDecoration
 import com.example.test908.presentation.common.Router
-import com.example.test908.presentation.common.Screens
 import com.example.test908.presentation.common.launchAndRepeatWithViewLifecycle
 import com.example.test908.presentation.common.subscribe
 import dagger.hilt.android.AndroidEntryPoint
@@ -64,28 +63,30 @@ class BooksFragment : Fragment() {
     }
 
     private fun initView() {
-        binding.rvBooks.apply {
-            adapter = this@BooksFragment.adapter
-            setHasFixedSize(true)
-            addItemDecoration(RecyclerViewItemDecoration())
-        }
-        binding.srBook.setOnRefreshListener {
-            viewModel.onEvent(BooksView.Event.RefreshBooks)
+        with(binding) {
+            rvBooks.apply {
+                adapter = this@BooksFragment.adapter
+                setHasFixedSize(true)
+                addItemDecoration(RecyclerViewItemDecoration())
+            }
+            srBook.setOnRefreshListener {
+                viewModel.onEvent(BooksView.Event.RefreshBooks)
+            }
         }
     }
 
     private fun initViewModel() {
         with(viewModel) {
             subscribe(uiLabels, ::handleUiLabel)
-            launchAndRepeatWithViewLifecycle { viewModel.uiState.collect(::handleState) }
+            launchAndRepeatWithViewLifecycle { uiState.collect(::handleState) }
         }
     }
 
     private fun handleUiLabel(uiLabel: BooksView.UiLabel): Unit =
         when (uiLabel) {
             is BooksView.UiLabel.ShowBrowse -> showBrowser(uiLabel.uri)
-            is BooksView.UiLabel.ShowFragmentWithDate -> routerForMain.navigateTo(Screens.DateFragment)
-            BooksView.UiLabel.ShowBottomSheetDialog -> router.navigateTo(Screens.DialogFragmentBooks)
+            is BooksView.UiLabel.ShowFragmentWithDate -> routerForMain.navigateTo(uiLabel.screens)
+            is BooksView.UiLabel.ShowBottomSheetDialog -> router.navigateTo(uiLabel.screens)
         }
 
     private fun handleState(model: BooksView.Model): Unit =

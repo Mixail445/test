@@ -9,12 +9,7 @@ interface Router {
     fun init(
         fragment: Fragment,
         fragmentManager: FragmentManager,
-    )
-
-    fun initWithTabs(
-        tabElementView: NavigationBarView,
-        fragment: Fragment,
-        fragmentManager: FragmentManager,
+        tabElementView: NavigationBarView? = null,
     )
 
     fun clear()

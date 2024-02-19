@@ -22,18 +22,15 @@ class RouterImpl
         override fun init(
             fragment: Fragment,
             fragmentManager: FragmentManager,
+            tabElementView: NavigationBarView?,
         ) {
             val navHostFragment = fragmentManager.findFragmentById(controller) as NavHostFragment?
             navController = navHostFragment?.navController ?: fragment.findNavController()
-        }
-
-        override fun initWithTabs(
-            tabElementView: NavigationBarView,
-            fragment: Fragment,
-            fragmentManager: FragmentManager,
-        ) {
-            init(fragment, fragmentManager)
-            navController?.let { NavigationUI.setupWithNavController(tabElementView, it, false) }
+            navController?.let {
+                if (tabElementView != null) {
+                    NavigationUI.setupWithNavController(tabElementView, it)
+                }
+            }
         }
 
         override fun clear() {
@@ -47,7 +44,7 @@ class RouterImpl
             when (screen) {
                 Screens.DetailReview -> moveToDetailReview(bundle)
                 Screens.HomeFragment -> moveToHomeFragment()
-                Screens.DateFragment -> moveToFragmentWithDate()
+                Screens.DateFragment -> moveToLimitedSeriesFragment()
                 Screens.DialogFragmentBooks -> showDialogFragment()
                 Screens.DialogFragmentReview -> showDialogReviewFragment()
                 is Screens.DialogToFragment ->
@@ -100,7 +97,7 @@ class RouterImpl
             navController?.navigate(BooksFragmentDirections.actionBooksFragmentToBottomSheetDialogLimitedSeriesFragment())
         }
 
-        private fun moveToFragmentWithDate() {
+        private fun moveToLimitedSeriesFragment() {
             navController?.navigate(R.id.action_homeFragment_to_limitedSeriesFragment2)
         }
 
@@ -114,13 +111,5 @@ class RouterImpl
 
         override fun back() {
             navController?.popBackStack()
-        }
-
-        private fun NavController.navigateTo(id: Int) {
-            if (previousBackStackEntry?.id != null) {
-                popBackStack(id, false)
-            } else {
-                navigate(id)
-            }
         }
     }

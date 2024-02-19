@@ -26,6 +26,6 @@ interface BooksView {
 
         data class ShowFragmentWithDate(val screens: Screens, val id: String) : UiLabel
 
-        data object ShowBottomSheetDialog : UiLabel
+        data class ShowBottomSheetDialog(val screens: Screens) : UiLabel
     }
 }

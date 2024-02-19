@@ -47,7 +47,8 @@ class ReviewsViewModel
         private val favoriteLocalSourceInt: FavoriteLocalSourceInt,
         @Assisted("filterByFavorite") private val showFavorite: Boolean?,
         @Assisted("filterByDate") private val filterByDate: Boolean?,
-        @Assisted("filterByAscending") private val filterByDateByAscending: Boolean?) : BaseViewModel() {
+        @Assisted("filterByAscending") private val filterByDateByAscending: Boolean?,
+    ) : BaseViewModel() {
         private var searchQuery: String = ""
         private var searchDateStart: LocalDateTime? = null
         private var searchDateEnd: LocalDateTime? = null
@@ -131,12 +132,24 @@ class ReviewsViewModel
                 is Event.OnReviewClick -> toDetailReview(event.id)
                 Event.RefreshReviews -> refreshReviews()
                 Event.OnCalendarClearDateClick -> onCalendarClearDateClick()
-                is Event.OnUserSelectPeriod -> handleUserSelectPeriod(event.firstDate, event.secondDate)
-                Event.ShowDialogFragment -> handlerShowDialogFragment()
+                is Event.OnUserSelectPeriod ->
+                    handleUserSelectPeriod(
+                        event.firstDate,
+                        event.secondDate,
+                    )
+
+                is Event.ShowDialogFragment -> handlerShowDialogFragment()
             }
 
         private fun handlerShowDialogFragment() {
-            _uiLabels.value = UiLabel.ShowDialogFragment(Screens.DialogFragmentReview)
+            _uiLabels.value =
+                UiLabel.ShowDialogFragment(
+                    Screens.FragmentToDialog(
+                        fav = showFavorite ?: false,
+                        desc = filterByDate ?: false,
+                        asc = filterByDateByAscending ?: false,
+                    ),
+                )
         }
 
         private fun toDetailReview(id: String) {
