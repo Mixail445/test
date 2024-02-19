@@ -13,14 +13,16 @@ import com.example.test908.domain.repository.limitedSeries.model.BookOffer
 import com.example.test908.domain.repository.review.model.Review
 import com.example.test908.utils.DateUtils
 
-fun ReviewDto.mapToEntity() = ReviewEntity(
-    abstract = abstract.orEmpty(),
-    byline = byline.orEmpty(),
-    multimedia = multimedia?.firstOrNull()?.url.orEmpty(),
-    publishedDate = publishedDate.orEmpty(),
-    title = title.orEmpty(),
-    shortUrl = shortUrl.orEmpty()
-)
+fun ReviewDto.mapToEntity() =
+    ReviewEntity(
+        abstract = abstract.orEmpty(),
+        byline = byline.orEmpty(),
+        multimedia = multimedia?.firstOrNull()?.url.orEmpty(),
+        publishedDate = publishedDate.orEmpty(),
+        title = title.orEmpty(),
+        shortUrl = shortUrl.orEmpty(),
+    )
+
 fun ReviewEntity.mapToDomain() =
     Review(
         abstract = abstract,
@@ -29,8 +31,9 @@ fun ReviewEntity.mapToDomain() =
         publishedDate = DateUtils.parseLocalDateTime(publishedDate),
         title = title,
         shortUrl = shortUrl,
-        localId = id.toString()
+        localId = id.toString(),
     )
+
 fun BooksDataDto.mapToDomain() =
     Books(
         description = description,
@@ -38,23 +41,21 @@ fun BooksDataDto.mapToDomain() =
         author = author,
         bookImage = bookImage,
         buyLinksName = buyLinks.map { it.mapToDomain() },
-        id = rank
+        id = rank,
     )
-fun BooksStoreDto.mapToDomain() =
-    BooksStore(name = name, url = url)
+
+fun BooksStoreDto.mapToDomain() = BooksStore(name = name, url = url)
+
 fun BookOfferDto.mapToDomain() =
     BookOffer(
         id = id,
-        expiresDate = expiresDate,
+        expiresDate = DateUtils.parseLocalDate(expiresDate),
         title = title,
         description = description,
-        price = price
+        price = price,
     )
+
 fun FeatureFlagsDto.mapToDomain() =
     FeatureFlags(
-        isLimitedSeriesEnabled
+        isLimitedSeriesEnabled,
     )
-
-
-
-

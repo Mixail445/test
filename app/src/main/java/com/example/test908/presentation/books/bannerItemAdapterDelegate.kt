@@ -10,9 +10,9 @@ fun bannerItemAdapterDelegate(onClick: (String) -> Unit) =
     adapterDelegateViewBinding<BannerUi, BaseItem, DialogFragmentLimitedSeriesBinding>(
         viewBinding = { layoutInflater, parent ->
             DialogFragmentLimitedSeriesBinding.inflate(layoutInflater, parent, false)
-        }
+        },
     ) {
-        binding.bvLimited.setOnClickListener { 
+        binding.bvLimited.setOnClickListener {
             onClick(item.itemId)
         }
         bind {
@@ -30,9 +30,14 @@ fun bannerItemAdapterDelegateGreen(onClickGreen: (String) -> Unit) =
     adapterDelegateViewBinding<BannerUiEmpty, BaseItem, DialogFragmentLimitedFourBinding>(
         viewBinding = { layoutInflater, parent ->
             DialogFragmentLimitedFourBinding.inflate(layoutInflater, parent, false)
-        }
+        },
     ) {
         binding.bvLimited.setOnClickListener {
             onClickGreen(item.itemId)
+        }
+        bind {
+            binding.bvLimited.text = item.textBottom
+            binding.tvTitleLimited.text = item.titleText
+            binding.tvBodyLimited.text = item.bodyText
         }
     }

@@ -6,8 +6,11 @@ import com.example.test908.domain.repository.limitedSeries.model.BookOffer
 import com.example.test908.utils.AppResult
 
 interface LimitedSeriesRepository {
-    suspend fun status(): LimitedSeriesRegistrationStatus
+    suspend fun status(): AppResult<LimitedSeriesRegistrationStatus, Throwable>
+
     suspend fun getBooksOffer(): AppResult<List<BookOffer>, Throwable>
-    suspend fun startRegistration()
-    suspend fun postCompleteRegistrationParams(params: PostCompleteRegistrationsParams)
+
+    suspend fun startRegistration(): AppResult<Unit, Throwable>
+
+    suspend fun postCompleteRegistrationParams(params: PostCompleteRegistrationsParams): AppResult<Unit, Throwable>
 }

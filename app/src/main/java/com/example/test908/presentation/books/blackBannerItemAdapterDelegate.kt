@@ -8,9 +8,10 @@ fun blackBannerItemAdapterDelegate(onClick: (String) -> Unit) =
     adapterDelegateViewBinding<BlackBannerUi, BaseItem, DialogFragmentLimitedTwoBinding>(
         viewBinding = { layoutInflater, parent ->
             DialogFragmentLimitedTwoBinding.inflate(layoutInflater, parent, false)
+        },
+    ) {
+        binding.bvLimited.setOnClickListener { onClick(item.itemId) }
+        bind {
+            binding.bvLimited.text = item.textBottom
         }
-) {
-    binding.bvLimited.setOnClickListener {
-        onClick(item.itemId)
     }
-}

@@ -45,12 +45,12 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Named
-import javax.inject.Singleton
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import javax.inject.Named
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -63,28 +63,28 @@ object AppModule {
     @Provides
     fun provideReviewsRemoteSource(
         api: ReviewApi,
-        dispatchersProvider: DispatchersProvider
+        dispatchersProvider: DispatchersProvider,
     ): ReviewRemoteSource = ReviewRemoteSourceImpl(api, dispatchersProvider)
 
     @Singleton
     @Provides
     fun provideLimitedRemoteSource(
         api: LimitedSeriesApi,
-        dispatchersProvider: DispatchersProvider
+        dispatchersProvider: DispatchersProvider,
     ): LimitedSeriesRemoteSource = LimitedSeriesRemoteSourceImpl(api, dispatchersProvider)
 
     @Singleton
     @Provides
     fun provideFeatureFlagRemoteSource(
         api: FeatureFlagApi,
-        dispatchersProvider: DispatchersProvider
+        dispatchersProvider: DispatchersProvider,
     ): FeatureFlagRemoteSource = FeatureFlagRemoteSourceImpl(api, dispatchersProvider)
 
     @Singleton
     @Provides
     fun provideReviewsLocalSource(
         dao: ReviewDao,
-        dispatchersProvider: DispatchersProvider
+        dispatchersProvider: DispatchersProvider,
     ): ReviewLocalSource = ReviewLocalSourceImpl(dao, dispatchersProvider)
 
     @Singleton
@@ -99,16 +99,20 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideSharePref(@ApplicationContext context: Context): SharedPreferencesOne<FavoriteData> = SharedPreferenceUtil(
-        context,
-        FavoriteData::class.java
-    )
+    fun provideSharePref(
+        @ApplicationContext context: Context,
+    ): SharedPreferencesOne<FavoriteData> =
+        SharedPreferenceUtil(
+            context,
+            FavoriteData::class.java,
+        )
 
     @Singleton
     @Provides
-    fun provideShare(sharedPreferencesOne: SharedPreferencesOne<FavoriteData>): FavoriteLocalSourceInt = FavoriteLocalSourceImpl(
-        sharedPreferencesOne
-    )
+    fun provideShare(sharedPreferencesOne: SharedPreferencesOne<FavoriteData>): FavoriteLocalSourceInt =
+        FavoriteLocalSourceImpl(
+            sharedPreferencesOne,
+        )
 
     @Singleton
     @Provides
@@ -122,13 +126,17 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideLimitedSeriesRepository(limitedSeriesRepositoryImpl: LimitedSeriesRepositoryImpl): LimitedSeriesRepository = limitedSeriesRepositoryImpl
+    fun provideLimitedSeriesRepository(limitedSeriesRepositoryImpl: LimitedSeriesRepositoryImpl): LimitedSeriesRepository =
+        limitedSeriesRepositoryImpl
 
     @Singleton
     @Provides
-    fun provideErrorHandler(@ApplicationContext context: Context): ErrorHandel = ErrorHandel(
-        context
-    )
+    fun provideErrorHandler(
+        @ApplicationContext context: Context,
+    ): ErrorHandel =
+        ErrorHandel(
+            context,
+        )
 
     @Singleton
     @Provides
@@ -143,27 +151,28 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(
-        okHttpClient: OkHttpClient
-    ): Retrofit = Retrofit.Builder()
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .baseUrl(BASE_URL)
-        .client(okHttpClient)
-        .build()
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
+        Retrofit.Builder()
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
+            .baseUrl(BASE_URL)
+            .client(okHttpClient)
+            .build()
 
     @Singleton
     @Provides
-    fun provideOkHttpClient() = OkHttpClient.Builder()
-        .addInterceptor(RequestInterceptor())
-        .addInterceptor(interceptor)
-        .build()
+    fun provideOkHttpClient() =
+        OkHttpClient.Builder()
+            .addInterceptor(RequestInterceptor())
+            .addInterceptor(interceptor)
+            .build()
 
-    private val interceptor = run {
-        val httpLoggingInterceptor = HttpLoggingInterceptor()
-        httpLoggingInterceptor.apply {
-            httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+    private val interceptor =
+        run {
+            val httpLoggingInterceptor = HttpLoggingInterceptor()
+            httpLoggingInterceptor.apply {
+                httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+            }
         }
-    }
 
     @Singleton
     @Provides
@@ -171,14 +180,14 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideFeatureFlagRepository(featureFlagRepositoryImpl: FeatureFlagRepositoryImpl): FeatureFlagRepository = featureFlagRepositoryImpl
-
+    fun provideFeatureFlagRepository(featureFlagRepositoryImpl: FeatureFlagRepositoryImpl): FeatureFlagRepository =
+        featureFlagRepositoryImpl
 
     @Singleton
     @Provides
     fun provideBooksRemoteSource(
         api: BooksApi,
-        dispatchersProvider: DispatchersProvider
+        dispatchersProvider: DispatchersProvider,
     ): BooksRemoteSource = BooksRemoteSourceImpl(api, dispatchersProvider)
 
     @Singleton

@@ -8,29 +8,28 @@ class BooksScreenAdapter(
     onNestedClicked: (String) -> Unit,
     onClickBannerBottom: (String) -> Unit,
     onClickBlackBanner: (String) -> Unit,
-    onClickBannerGreen: (String) -> Unit
-) : AsyncListDifferDelegationAdapter<BaseItem>(
-    diffUtils()
-) {
+    onClickBannerGreen: (String) -> Unit,
+) : AsyncListDifferDelegationAdapter<BaseItem>(diffUtils()) {
     init {
         delegatesManager
             .addDelegate(
                 BOOKS_ITEM_VIEW_TYPE,
-                booksItemAdapterDelegate(onNestedClicked)
+                booksItemAdapterDelegate(onNestedClicked),
             )
             .addDelegate(
                 LIMITED_SERIES_COMMERCIAL_BANNER_GREEN_ITEM_VIEW_TYPE,
-                bannerItemAdapterDelegateGreen(onClickBannerGreen)
+                bannerItemAdapterDelegateGreen(onClickBannerGreen),
             )
             .addDelegate(
                 LIMITED_SERIES_COMMERCIAL_BANNER_ITEM_VIEW_TYPE,
-                bannerItemAdapterDelegate(onClickBannerBottom)
+                bannerItemAdapterDelegate(onClickBannerBottom),
             )
             .addDelegate(
                 LIMITED_SERIES_COMPLETED_REGISTRATION_BANNER_VIEW_TYPE,
-                blackBannerItemAdapterDelegate(onClickBlackBanner)
+                blackBannerItemAdapterDelegate(onClickBlackBanner),
             )
     }
+
     companion object {
         const val BOOKS_ITEM_VIEW_TYPE = -1001
         const val LIMITED_SERIES_COMMERCIAL_BANNER_ITEM_VIEW_TYPE = -1002
@@ -39,10 +38,11 @@ class BooksScreenAdapter(
     }
 }
 
-private fun diffUtils() = itemCallback<BaseItem>(
-    areItemsTheSame = { oldItem, newItem -> oldItem.itemId == newItem.itemId },
-    areContentsTheSame = { oldItem, newItem -> oldItem == newItem },
-    getChangePayload = { _, _ ->
-        Any()
-    }
-)
+private fun diffUtils() =
+    itemCallback<BaseItem>(
+        areItemsTheSame = { oldItem, newItem -> oldItem.itemId == newItem.itemId },
+        areContentsTheSame = { oldItem, newItem -> oldItem == newItem },
+        getChangePayload = { _, _ ->
+            Any()
+        },
+    )
