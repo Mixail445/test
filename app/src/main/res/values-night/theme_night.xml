@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Test908.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="Theme.Test908" parent="Theme.MaterialComponents.Light.Bridge">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="colorPrimary">#252424</item>
+        <item name="colorPrimaryVariant">@color/bottom_sheet_state_1</item>
+        <item name="colorOnPrimary">#312020</item>
+        <item name="colorSecondary">@color/bottom_sheet_state_1</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/purple_700</item>
+        <item name="android:statusBarColor">#312620</item>
+    </style>
+</resources>
